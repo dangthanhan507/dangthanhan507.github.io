@@ -71,3 +71,5 @@ It's a very simple algorithm.
 
 This is a figure showcasing the WL-1 test / color algorithm
 ![](../assets/images/graph/graph_color.png)
+
+There does exist higher-order WL-tests and you can design GNNs to support these, but it might not be as important. Apparently, the WL-1 test works for most graphs.
