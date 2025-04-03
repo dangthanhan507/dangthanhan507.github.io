@@ -61,6 +61,9 @@ defaults:
 #   - vendor/gems/
 #   - vendor/ruby/
 
+mathjax:
+  source: https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/latest.js?config=TeX-AMS_CHTML
+  config: 'MathJax.Hub.Config({ TeX: { equationNumbers: { autoNumber: "AMS" } } })'
 
 heading_anchors: true
 
