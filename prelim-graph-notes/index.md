@@ -3,9 +3,9 @@
 # To modify the layout, see https://jekyllrb.com/docs/themes/#overriding-theme-defaults
 
 layout: default
-title:  Graph Notes (GNNs and more)
+title:  Preliminary Graph Notes (GNNs and more)
 math: katex
 has_children: true
 ---
 
-My notes on graph mafs (for the sake of my learning projects).
+My notes on general mafs such that I can understand the graph mafs.
