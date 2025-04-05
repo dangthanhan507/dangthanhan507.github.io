@@ -3,15 +3,16 @@
 # To modify the layout, see https://jekyllrb.com/docs/themes/#overriding-theme-defaults
 
 layout: default
-title:  Graph Notes (GNNs and more)
+title:  Quick Notes on Graphs
 math: katex
 has_children: true
 ---
 
-My notes on graph mafs (for the sake of my learning projects).
+My quick notes on graph stuff to get caught up in graphs (for the sake of my learning projects).
 
 
 These are first-pass notes that need extra work:
 - latent-gnn.md
 - gnn-pde.md
 - scaling-gnns.md
+- graph-rewiring.md

@@ -3,7 +3,7 @@ layout: default
 title:  "GNNs as PDEs"
 date:   2025-04-04
 categories: GNN and PDE
-parent: Graph Notes (GNNs and more)
+parent: Quick Notes on Graphs
 # math: katex
 mathjax: true
 tags: 

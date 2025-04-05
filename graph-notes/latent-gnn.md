@@ -3,7 +3,7 @@ layout: default
 title:  "Latent GNNs"
 date:   2025-04-04
 categories: Latent Space GNNs
-parent: Graph Notes (GNNs and more)
+parent: Quick Notes on Graphs
 # math: katex
 mathjax: true
 tags: 

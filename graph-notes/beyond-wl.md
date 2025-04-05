@@ -3,7 +3,7 @@ layout: default
 title:  "Beyond WL-test"
 date:   2025-04-03
 categories: GNN expressivity
-parent: Graph Notes (GNNs and more)
+parent: Quick Notes on Graphs
 # math: katex
 mathjax: true
 tags: 

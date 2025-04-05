@@ -5,6 +5,6 @@
 layout: home
 ---
 
-Just messing around.
+Just some notes on math, control theory, and machine learning.
 
 My personal website is at: [dangthanhan507.github.io](https://dangthanhan507.github.io)

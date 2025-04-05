@@ -3,7 +3,7 @@ layout: default
 title:  "Graph Rewiring"
 date:   2025-04-05
 categories: Scaling GNNs
-parent: Graph Notes (GNNs and more)
+parent: Quick Notes on Graphs
 # math: katex
 mathjax: true
 tags: 
