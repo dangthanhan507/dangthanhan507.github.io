@@ -13,3 +13,5 @@ My notes on graph mafs (for the sake of my learning projects).
 
 These are first-pass notes that need extra work:
 - latent-gnn.md
+- gnn-pde.md
+- scaling-gnns.md
