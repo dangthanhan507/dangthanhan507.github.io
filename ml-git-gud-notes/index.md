@@ -40,12 +40,9 @@ This is a collection of resources I've used to try and git gud in ML. Hopefully,
     - You can think of the homeworks as hardcore mini-projects per question where you have to implement a paper miniaterized into a homework question.
     - This makes you more solid in your PyTorch!
     - I love homeworks that are hard because they make me better.
-4. CS274B (UCI) - [Canvas](https://canvas.eee.uci.edu/courses/64508/assignments/syllabus)
-    - This is a course taught by Erik Sudderth @ UC Irvine.
-    - It goes into probabilistic graphical models (just more bayesian probability)
-    - I like this compared to Stanford's equivalent class.
-    - The techniques are very old (but solid) and going through the Bishop textbook and homework (hard) is a good way to build really strong bayes probability foundations.
-    - This course made me very comfortable with probability (can't get any worse).
+4. Transformer Circuits! - [Website](https://transformer-circuits.pub/2021/framework/index.html)
+    - Transformers is the key to scaling up models nowadays.
+    - We try to learn way more about transformers through this (+ exercises yay!).
 
 ## 2. Becoming a good engineer
 1. Full-stack DL - [Website](https://fullstackdeeplearning.com/)
@@ -82,7 +79,17 @@ This is a collection of resources I've used to try and git gud in ML. Hopefully,
     - Dip your toes into Stochastic Differential Equations (SDEs).
     - Has labs that help you train a diffusion model from the ground up in a more intuitive framework (flow matching).
 
-## 4. Learning more about ML Research
+## 4. Theoretical Stuff
+1. CS274B (UCI) - [Canvas](https://canvas.eee.uci.edu/courses/64508/assignments/syllabus)
+    - This is a course taught by Erik Sudderth @ UC Irvine.
+    - It goes into probabilistic graphical models (just more bayesian probability)
+    - I like this compared to Stanford's equivalent class.
+    - The techniques are very old (but solid) and going through the Bishop textbook and homework (hard) is a good way to build really strong bayes probability foundations.
+    - This course made me very comfortable with probability (can't get any worse).
+2. Matrix Calculus - [Youtube](https://www.youtube.com/playlist?list=PLUl4u3cNGP62EaLLH92E_VCN4izBKK6OE)
+    - The pain of matrix calculus
+
+## 5. Learning more about ML Research
 1. Yannic Kilcher - [YouTube](https://www.youtube.com/@YannicKilcher)
     - Better understanding of ML PhD life - [Video](https://www.youtube.com/watch?v=rHQPBqMULXo)
         - It's one thing to hear from your advisor. It's another to hear from a guy who talks like he's your friend who has been through the trenches before.
