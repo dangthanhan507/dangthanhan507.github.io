@@ -14,98 +14,62 @@ This is a collection of resources I've used to try and git gud in ML. Hopefully,
 <!-- # Display a link -->
 ## 1. Get started (Basics)
 1. Andrej Karpathy Zero to Hero - [YouTube](https://www.youtube.com/playlist?list=PLoROMvodv4rO2c7g2i0a3d8b6e1a5c3d4)
-    - Get good at backprop while learning about ML basics.
-    - Learn how pytorch works under the hood.
-    - Exposure to simple concepts like (Gradient Descent, Weight Initialization, Train/Val, BatchNorm/LayerNorm, Attention ...etc.)
-    - Learn more complex training concepts (gradient accumulation, mixed precision, bfloat, distributed pytorch, )
-    - End goal: you can get started in ML and run a simple training script by end of this playlist.
+    - Indirectly learn how pytorch works under the hood.
+    - ML Concepts: Backprop, Gradient Descent, Weight Init, Train/Val, BatchNorm/LayerNorm, Attention ...etc.
+    - Training Concepts (gradient accumulation, mixed precision, distributed pytorch, )
 2. UvA DL - [Notebook-Website](https://uvadlc-notebooks.readthedocs.io/en/latest/)
-    - Deep Learning 1 (PyTorch)
-        - Tutorial 2-4: (Andrej Karpathy covered, but you should do it anyway to learn to visualize gradients and attention)
-        - Tutorial 5-6: Basics on ResNets, CNNs, and Transformers
-        - Tutorial 9,12,15: Autoencoder, Autoregressive models, Vision Transformers
-        - Tutorial 7,8,10,11,16,17: These are all extras to make you learn about all the other things in deep learning.
+    - Deep Learning 1 (PyTorch): exposes you to popular architectures
     - Training Models at Scale
         - takes stuff you learned from (1.) and levels it up.
-        - concepts:
-            - tensor parallelism
-            - looping parallelism
-            - pipeline parallelism
-            - profiling models
-            - 3d parallelism
-            - async layers
 3. CS294 - [Website](https://sites.google.com/view/berkeley-cs294-158-sp24/home)
-    - This is a course taught by Pieter Abbeel @ UC Berkeley. 
-    - I think some of the topics are pretty niche, but the homeworks are invaluable.
-    - You can think of the homeworks as hardcore mini-projects per question where you have to implement a paper miniaterized into a homework question.
-    - This makes you more solid in your PyTorch!
-    - I love homeworks that are hard because they make me better.
-4. Transformer Circuits! - [Website](https://transformer-circuits.pub/2021/framework/index.html)
-    - Transformers is the key to scaling up models nowadays.
-    - We try to learn way more about transformers through this (+ exercises yay!).
+    - Taught by Pieter Abbeel @ UC Berkeley. 
+    - Homeworks are from scratch mini-paper implementations per question. (most valuable)
+    - Makes you more solid in your PyTorch and implementation intuition!
+4. Transformer Circuits! - [Website](https://transformer-circuits.pub)
+    - Listed are insightful posts I think are worth reading.
+    - [A mathematical framework for Transformer Circuits.](https://transformer-circuits.pub/2021/framework/index.html)
+        - Comes with exercises
+    - [In-context Learning and Induction Heads](https://transformer-circuits.pub/2022/in-context-learning-and-induction-heads/index.html)
+    - [Circuit Tracking: Revealing Computational Graphs on LMs](https://transformer-circuits.pub/2025/attribution-graphs/methods.html)
+    - [Biology of LLMs](https://transformer-circuits.pub/2025/attribution-graphs/biology.html)
+5. Interpreting GPT - [Website](https://www.lesswrong.com/posts/AcKRB8wDpdaN6v6ru/interpreting-gpt-the-logit-lens)
+6. Vision Circuits! - [Website](https://distill.pub/2020/circuits/)
 
 ## 2. Becoming a good engineer
 1. Full-stack DL - [Website](https://fullstackdeeplearning.com/)
     - This is a course that tries to make you become a better ML Engineer.
     - These are my takeaways
-        - This is where I really got into PyTorch Lightning.
-        - Learning to use W&B (Weights and Biases) to track your experiments.
-        - Learning to use DVC (Data Version Control) to version your data.
-        - Deploy models on gradio (seems to be what a lot of people use nowadays).
-        - Learning to monitor models in production.
-        - Obviously unittesting my code.
-        - Learning to use Docker to containerize my code.
+        - PyTorch Lightning intro.
+        - W&B (Weights and Biases) for experiment tracking.
+        - Gradio for model deployment.
 2. Missing Semester of CS Education - [Website](https://missing.csail.mit.edu/)
-    - This is a course that tries to teach you the missing pieces of CS education.
-    - While university education gives you a lot of theory, this course remedies it with relevant practical skills.
-    - I think you really need this if you want to be a good software engineer. 
-    - Stuff like Vim, Security, Build Systems, Git, Shell, etc.
+    - If you don't know stuff from this course, you're missing out!
 
 ## 3. Learning more!
 1. UvA DL - [Notebook-Website](https://uvadlc-notebooks.readthedocs.io/en/latest/)
     - Deep Learning 2: Learn some super niche stuff that will make you overall better.
-        - GDL  (Geometric Deep Learning)
-        - DPM  (Deep Probabilistic Models (VAEs))
-        - AGM  (Advanced Generative Models, 1x1 Normalizing Flows)
-        - HDL  (Hyperparameter-Tuning Deep Learning)
-        - BNN  (Bayesian Neural Networks)
-        - PIML (Physics Inspired Machine Learning)
-        - DS   (Dynamical Systems)
-        - SGA  (Sampling Discrete Structures)
-        - CRL  (Casual Identifiability)
 2. Diffusion - [Website](https://diffusion.csail.mit.edu/)
-    - MIT course on diffusion models.
     - Goes into deep mathematical details of diffusion models and flow matching.
-    - Dip your toes into Stochastic Differential Equations (SDEs).
-    - Has labs that help you train a diffusion model from the ground up in a more intuitive framework (flow matching).
+    - Has labs that help you train a diffusion model from the ground up.
 
 ## 4. Theoretical Stuff
 1. CS274B (UCI) - [Canvas](https://canvas.eee.uci.edu/courses/64508/assignments/syllabus)
-    - This is a course taught by Erik Sudderth @ UC Irvine.
+    - This is a course taught by Erik Sudderth @ UC Irvine (I think better than Stanford)
     - It goes into probabilistic graphical models (just more bayesian probability)
-    - I like this compared to Stanford's equivalent class.
-    - The techniques are very old (but solid) and going through the Bishop textbook and homework (hard) is a good way to build really strong bayes probability foundations.
-    - This course made me very comfortable with probability (can't get any worse).
+    - Going through material + homework will get you very comfortable with probability (useful for research)
 2. Matrix Calculus - [Youtube](https://www.youtube.com/playlist?list=PLUl4u3cNGP62EaLLH92E_VCN4izBKK6OE)
     - The pain of matrix calculus
 
 ## 5. Learning more about ML Research
 1. Yannic Kilcher - [YouTube](https://www.youtube.com/@YannicKilcher)
     - Better understanding of ML PhD life - [Video](https://www.youtube.com/watch?v=rHQPBqMULXo)
-        - It's one thing to hear from your advisor. It's another to hear from a guy who talks like he's your friend who has been through the trenches before.
     - He has a lot of videos on ML research papers. He does a good job of explaining the concepts and the math behind them.
     - I read the same papers he does a video on and compare my analysis to his to see what I'm missing.
 2. Aleksa Gordic - [Youtube](https://www.youtube.com/c/TheAIEpiphany)
     - This guy does the same sort of content as Yannic Kilcher for papers. I like having another datapoint to compare. Also multiple sources help you keep up to date with current hype ML stuff.
     - Exclusive stuff from his channel:
         - Deep dives into codebases from papers he also reviews! (DINO, DETR, Diffusion,...etc.)
-            - I love this as it helps me compare how someone with lots of ML experience quickly reads through code.
-            - It also helps me link code with papers.
-        - Livestreams himself implementing super Large models
-            - Really nice background noise for working haha.
-            - I like to watch him (not just as noise) to understand kind of what it takes to implement these models (some of my friends are pretty good at this stuff, but I'm not, so I gotta catch up). 
+        - Livestreams himself implementing super large models.
 3. Machine Learning & Simulation - [Youtube](https://www.youtube.com/@MachineLearningSimulation)
-    - This guy does lots of ML Physics stuff.
+    - This guy does lots of ML Physics stuff and goes into classical techniques on dynamical systems (FEM from scratch).
     - He also is a huge fan of JAX and has a lot of videos on it.
-    - He also just goes into classical techniques on dynamical systems (even has a video on writing your own FEM from scratch).
-    - I use this to learn things for fun (which helps get me better).
