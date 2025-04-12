@@ -49,8 +49,12 @@ This is a collection of resources I've used to try and git gud in ML. Hopefully,
 1. UvA DL - [Notebook-Website](https://uvadlc-notebooks.readthedocs.io/en/latest/)
     - Deep Learning 2: Learn some super niche stuff that will make you overall better.
 2. Diffusion - [Website](https://diffusion.csail.mit.edu/)
-    - Goes into deep mathematical details of diffusion models and flow matching.
-    - Has labs that help you train a diffusion model from the ground up.
+    - Gives mathematical details of diffusion models and flow matching.
+    - Labs help you train a diffusion model from the ground up.
+3. Machine Learning & Simulation - [Youtube](https://www.youtube.com/@MachineLearningSimulation)
+    - This guy does lots of ML Physics stuff and goes into classical techniques on dynamical systems (FEM from scratch).
+    - He also is a huge fan of JAX and has a lot of videos on it.
+
 
 ## 4. Theoretical Stuff
 1. CS274B (UCI) - [Canvas](https://canvas.eee.uci.edu/courses/64508/assignments/syllabus)
@@ -58,7 +62,6 @@ This is a collection of resources I've used to try and git gud in ML. Hopefully,
     - It goes into probabilistic graphical models (just more bayesian probability)
     - Going through material + homework will get you very comfortable with probability (useful for research)
 2. Matrix Calculus - [Youtube](https://www.youtube.com/playlist?list=PLUl4u3cNGP62EaLLH92E_VCN4izBKK6OE)
-    - The pain of matrix calculus
 
 ## 5. Learning more about ML Research
 1. Yannic Kilcher - [YouTube](https://www.youtube.com/@YannicKilcher)
@@ -70,6 +73,3 @@ This is a collection of resources I've used to try and git gud in ML. Hopefully,
     - Exclusive stuff from his channel:
         - Deep dives into codebases from papers he also reviews! (DINO, DETR, Diffusion,...etc.)
         - Livestreams himself implementing super large models.
-3. Machine Learning & Simulation - [Youtube](https://www.youtube.com/@MachineLearningSimulation)
-    - This guy does lots of ML Physics stuff and goes into classical techniques on dynamical systems (FEM from scratch).
-    - He also is a huge fan of JAX and has a lot of videos on it.
