@@ -3,7 +3,7 @@
 # To modify the layout, see https://jekyllrb.com/docs/themes/#overriding-theme-defaults
 
 layout: default
-title:  Preliminary Graph Notes (GNNs and more)
+title:  Prerequisites
 math: katex
 has_children: true
 ---
