@@ -8,11 +8,4 @@ math: katex
 has_children: true
 ---
 
-My quick notes on graph stuff to get caught up in graphs (for the sake of my learning projects).
-
-
-These are first-pass notes that need extra work:
-- latent-gnn.md
-- gnn-pde.md
-- scaling-gnns.md
-- graph-rewiring.md
+My quick notes on graph stuff based on some articles.
