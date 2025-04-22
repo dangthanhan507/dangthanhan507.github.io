@@ -347,3 +347,196 @@ It seems all of the details of how action is handled is within the <i> RobotEnv 
 ```
 
 I don't know what this pre-action is but it seems that it could be overriding the controller???? and just setting the robot position. 
+
+According to <i> robosuite/environments/base.py </i> line 483 in the definition of <i> _pre_action </i>:
+```python
+def _pre_action(self, action, policy_step=False):
+    """
+    Do any preprocessing before taking an action.
+    Args:
+        action (np.array): Action to execute within the environment
+        policy_step (bool): Whether this current loop is an actual policy step or internal sim update step
+    """
+    self.sim.data.ctrl[:] = action
+```
+which means that this code does get run and will change the robot! 
+
+Note that the robot state change comes from <i> robot.control </i>, so we can investigate that.
+
+We find an implementation of <i> control </i> in <i> robosuite/robots/fixed_base_robots.py </i>
+
+```python
+def control(self, action, policy_step=False):
+    """
+    Actuate the robot with the
+    passed joint velocities and gripper control.
+
+    Args:
+        action (np.array): The control to apply to the robot. The first @self.robot_model.dof dimensions should
+            be the desired normalized joint velocities and if the robot has a gripper, the next @self.gripper.dof
+            dimensions should be actuation controls for the gripper.
+
+            :NOTE: Assumes inputted actions are of form:
+                [right_arm_control, right_gripper_control, left_arm_control, left_gripper_control]
+
+        policy_step (bool): Whether a new policy step (action) is being taken
+    """
+    # clip actions into valid range
+    assert len(action) == self.action_dim, "environment got invalid action dimension -- expected {}, got {}".format(
+        self.action_dim, len(action)
+    )
+
+    self.composite_controller.update_state()
+    if policy_step:
+        self.composite_controller.set_goal(action)
+
+    applied_action_dict = self.composite_controller.run_controller(self._enabled_parts)
+    for part_name, applied_action in applied_action_dict.items():
+        applied_action_low = self.sim.model.actuator_ctrlrange[self._ref_actuators_indexes_dict[part_name], 0]
+        applied_action_high = self.sim.model.actuator_ctrlrange[self._ref_actuators_indexes_dict[part_name], 1]
+        applied_action = np.clip(applied_action, applied_action_low, applied_action_high)
+        self.sim.data.ctrl[self._ref_actuators_indexes_dict[part_name]] = applied_action
+
+    if policy_step:
+        # Update proprioceptive values
+        self.recent_qpos.push(self._joint_positions)
+        self.recent_actions.push(action)
+        self.recent_torques.push(self.torques)
+
+        for arm in self.arms:
+            controller = self.part_controllers[arm]
+            # Update arm-specific proprioceptive values
+            self.recent_ee_forcetorques[arm].push(np.concatenate((self.ee_force[arm], self.ee_torque[arm])))
+            self.recent_ee_pose[arm].push(np.concatenate((controller.ref_pos, T.mat2quat(controller.ref_ori_mat))))
+            self.recent_ee_vel[arm].push(np.concatenate((controller.ref_pos_vel, controller.ref_ori_vel)))
+
+            # Estimation of eef acceleration (averaged derivative of recent velocities)
+            self.recent_ee_vel_buffer[arm].push(np.concatenate((controller.ref_pos_vel, controller.ref_ori_vel)))
+            diffs = np.vstack(
+                [
+                    self.recent_ee_acc[arm].current,
+                    self.control_freq * np.diff(self.recent_ee_vel_buffer[arm].buf, axis=0),
+                ]
+            )
+            ee_acc = np.array([np.convolve(col, np.ones(10) / 10.0, mode="valid")[0] for col in diffs.transpose()])
+            self.recent_ee_acc[arm].push(ee_acc)
+```
+We see that this actually runs a controller (most likely OSC) and then gives out an "action" which is actually just torques to apply on the robot. 
+
+So in reality, the <i> _pre_action </i> is the action code.
+
+Now, we can take a look at the controller code. This is located in <i> robosuite/controllers/parts/arm/osc.py </i>. 
+
+```python
+def set_goal(self, action):
+    """
+    Sets goal based on input @action. If self.impedance_mode is not "fixed", then the input will be parsed into the
+    delta values to update the goal position / pose and the kp and/or damping_ratio values to be immediately updated
+    internally before executing the proceeding control loop.
+
+    Note that @action expected to be in the following format, based on impedance mode!
+
+        :Mode `'fixed'`: [joint pos command]
+        :Mode `'variable'`: [damping_ratio values, kp values, joint pos command]
+        :Mode `'variable_kp'`: [kp values, joint pos command]
+
+    Args:
+        action (Iterable): Desired relative joint position goal state
+    """
+    # Update state
+    self.update()
+
+    # Parse action based on the impedance mode, and update kp / kd as necessary
+    if self.impedance_mode == "variable":
+        damping_ratio, kp, delta = action[:6], action[6:12], action[12:]
+        self.kp = np.clip(kp, self.kp_min, self.kp_max)
+        self.kd = 2 * np.sqrt(self.kp) * np.clip(damping_ratio, self.damping_ratio_min, self.damping_ratio_max)
+    elif self.impedance_mode == "variable_kp":
+        kp, delta = action[:6], action[6:]
+        self.kp = np.clip(kp, self.kp_min, self.kp_max)
+        self.kd = 2 * np.sqrt(self.kp)  # critically damped
+    else:  # This is case "fixed"
+        delta = action
+
+    # If we're using deltas, interpret actions as such
+    if self.input_type == "delta":
+        scaled_delta = self.scale_action(delta)
+        self.goal_pos = self.compute_goal_pos(scaled_delta[0:3])
+        if self.use_ori is True:
+            self.goal_ori = self.compute_goal_ori(scaled_delta[3:6])
+        else:
+            self.goal_ori = self.compute_goal_ori(np.zeros(3))
+    # Else, interpret actions as absolute values
+    elif self.input_type == "absolute":
+        self.goal_pos = action[0:3]
+        if self.use_ori is True:
+            self.goal_ori = Rotation.from_rotvec(action[3:6]).as_matrix()
+        else:
+            self.goal_ori = self.compute_goal_ori(np.zeros(3))
+    else:
+        raise ValueError(f"Unsupport input_type {self.input_type}")
+    ... # AN CUTOFF
+```
+We can see that when <i> input_type == "delta" </i>, it computes the new rotation matrix given a delta rather than just wrap a rotation instance around the action. 
+
+If we really want to get specific, we can look at <i> self.compute_goal_ori </i>
+```python
+    def compute_goal_ori(self, delta, goal_update_mode=None):
+        """
+        Compute new goal orientation, given a delta to update. Can either update the new goal based on
+        current achieved position or current deisred goal. Updating based on current deisred goal can be useful
+        if we want the robot to adhere with a sequence of target poses as closely as possible,
+        without lagging or overshooting.
+
+        Args:
+            delta (np.array): Desired relative change in orientation, in axis-angle form [ax, ay, az]
+            goal_update_mode (str): either "achieved" (achieved position) or "desired" (desired goal)
+
+        Returns:
+            np.array: updated goal orientation in the controller frame
+        """
+        if goal_update_mode is None:
+            goal_update_mode = self._goal_update_mode
+        assert goal_update_mode in ["achieved", "desired"]
+
+        if self.goal_ori is None:
+            # if goal is not already set, set it to current orientation (in controller ref frame)
+            if self.input_ref_frame == "base":
+                self.goal_ori = self.goal_origin_to_eef_pose()[:3, :3]
+            elif self.input_ref_frame == "world":
+                self.goal_ori = self.ref_ori_mat
+            else:
+                raise ValueError
+
+        # convert axis-angle value to rotation matrix
+        quat_error = T.axisangle2quat(delta) #AN NOTE: this is the moneymaker
+        rotation_mat_error = T.quat2mat(quat_error)
+
+        if self._goal_update_mode == "desired":
+            # update new goal wrt current desired goal
+            goal_ori = np.dot(rotation_mat_error, self.goal_ori)
+        elif self._goal_update_mode == "achieved":
+            # update new goal wrt current achieved orientation
+            if self.input_ref_frame == "base":
+                curr_goal_ori = self.goal_origin_to_eef_pose()[:3, :3]
+            elif self.input_ref_frame == "world":
+                curr_goal_ori = self.ref_ori_mat
+            else:
+                raise ValueError
+            goal_ori = np.dot(rotation_mat_error, curr_goal_ori) #AN NOTE: this is the moneymaker
+        else:
+            raise ValueError
+
+        # AN REDACTED
+
+        return goal_ori
+```
+We can see in the definition of <i> goal_ori </i> how delta is utilized. Additionally, we know that the delta is angleaxis representation in the instantiation of <i> quat_error </i> where it uses <i> T.axisangle2quat(delta) </i> to convert it from axisangle to a quaternion.
+
+This confirms that the action space is in delta-poses and uses axis-angle for rotation representation.
+
+---
+
+### Checking out Robomimic's dataset
+
+Next implementation detail that we need to understand is how the dataset is recorded.
