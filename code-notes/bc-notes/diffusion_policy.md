@@ -3,6 +3,7 @@ layout: default
 title: Lift Task
 parent: Behavior Cloning
 nav_order: 1
+mathjax: true
 ---
 # Diffusion Policy Lift Task
 
@@ -92,7 +93,7 @@ We start in <i> policy_nets.py </i>
 ### Policy Network
 Our desired BC network implementation is written in <i> ActorNetwork </i> class. This is the inheritance graph for the class:
 ```mermaid
-flowchart TD
+flowchart LR
     A(ActorNetwork) --> B(MIMO_MLP) --> C(Module) --> D(torch.nn.Module)
 ```
 
@@ -247,3 +248,102 @@ Actualy it could just be concatenation for state-based BC. It only runs encoder 
 
 I think we dug enough into how the <i> ActorNetwork </i> is implemented for us. Now we want to see how it is used in the training loop (and inference time).
 
+This is the loss function computed in the <i> BC </b> class which uses <i> ActorNetwork </i>.
+
+```python
+    def _compute_losses(self, predictions, batch):
+        """
+        Internal helper function for BC algo class. Compute losses based on
+        network outputs in @predictions dict, using reference labels in @batch.
+
+        Args:
+            predictions (dict): dictionary containing network outputs, from @_forward_training
+            batch (dict): dictionary with torch.Tensors sampled
+                from a data loader and filtered by @process_batch_for_training
+
+        Returns:
+            losses (dict): dictionary of losses computed over the batch
+        """
+        losses = OrderedDict()
+        a_target = batch["actions"]
+        actions = predictions["actions"]
+        losses["l2_loss"] = nn.MSELoss()(actions, a_target)
+        losses["l1_loss"] = nn.SmoothL1Loss()(actions, a_target)
+        # cosine direction loss on eef delta position
+        losses["cos_loss"] = LossUtils.cosine_loss(actions[..., :3], a_target[..., :3])
+
+        action_losses = [
+            self.algo_config.loss.l2_weight * losses["l2_loss"],
+            self.algo_config.loss.l1_weight * losses["l1_loss"],
+            self.algo_config.loss.cos_weight * losses["cos_loss"],
+        ]
+        action_loss = sum(action_losses)
+        losses["action_loss"] = action_loss
+        return losses
+```
+
+As we can see, the loss function is as follows:
+
+$$
+\begin{equation}
+\mathcal{L} = \lambda_1 \mathcal{L}_{l2} + \lambda_2 \mathcal{L}_{l1} + \lambda_3 \mathcal{L}_{cos}
+\end{equation}
+$$
+
+where $$\mathcal{L}_{cos}$$ is cosine similarity loss. This is added on top of the MSE (I am only using this) and L1 loss.
+
+If we tried to figure out how the neural network action is used, we won't find it in this codebase (sadly). It is all abstracted away in a <i> .step() </i> function within <i> run_rollout() </i> which is where the <i> BC </i> class is deployed. The notion of action is just a tensor that is passed around.
+
+In order to understand how the action is used, we need to dig into robosuite, to see how it handles its action space!
+
+---
+
+## Robosuite Code Dive
+
+[Robosuite Codebase](https://github.com/ARISE-Initiative/robosuite)
+
+It seems that robosuite has a Lift Task! It is actually a manipulation environment that we can take a look at.
+
+<b> NOTE </b> if we want to just use someone else's environment, keep note that robosuite is the codebase that defines all the environments we are benchmarking against. It is a wrapper around MuJoCo.
+
+This is the inheritance graph for <i> Lift </i> class:
+
+```mermaid
+flowchart LR
+    A(Lift) --> B(ManipulationEnv) --> C(RobotEnv) --> D(MujocoEnv)
+```
+
+It seems all of the details of how action is handled is within the <i> RobotEnv </i> class.
+
+
+```python
+    def _pre_action(self, action, policy_step=False):
+        """
+        Overrides the superclass method to control the robot(s) within this enviornment using their respective
+        controllers using the passed actions and gripper control.
+
+        Args:
+            action (np.array): The control to apply to the robot(s). Note that this should be a flat 1D array that
+                encompasses all actions to be distributed to each robot if there are multiple. For each section of the
+                action space assigned to a single robot, the first @self.robots[i].controller.control_dim dimensions
+                should be the desired controller actions and if the robot has a gripper, the next
+                @self.robots[i].gripper.dof dimensions should be actuation controls for the gripper.
+            policy_step (bool): Whether a new policy step (action) is being taken
+
+        Raises:
+            AssertionError: [Invalid action dimension]
+        """
+        # Verify that the action is the correct dimension
+        assert len(action) == self.action_dim, "environment got invalid action dimension -- expected {}, got {}".format(
+            self.action_dim, len(action)
+        )
+
+        # Update robot joints based on controller actions
+        cutoff = 0
+        for idx, robot in enumerate(self.robots):
+            robot_action = action[cutoff : cutoff + robot.action_dim]
+            robot.control(robot_action, policy_step=policy_step)
+            cutoff += robot.action_dim
+```
+
+I don't know what this pre-action is but it seems that it could be overriding the controller???? and just setting the robot position. 
