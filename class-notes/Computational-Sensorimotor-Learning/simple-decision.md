@@ -10,9 +10,9 @@ tags:
 # math: katex
 ---
 
-# 2. Simple Decision Making
+# 1. Simple Decision Making
 
-## 2.1 Multi-armed Bandit (MAB)
+## 1.1 Multi-armed Bandit (MAB)
 
 This is a simple reward-based learning problem where you have to choose one out of K possible actions (discrete).
 
@@ -32,7 +32,7 @@ $$
 \end{equation}
 $$
 
-## 2.1a Webpage example
+## 1.1a Webpage example
 
 Say we want to build a recommendation system for landing webpages. Our goal is to build a recommendation system that displays the landing page that maximizes profit. <b> NOTE: </b> We have no priors on which landing page maximizes profit.
 
@@ -66,7 +66,7 @@ $$
 
 Exploration and exploitation is the balance between trying new actions (exploration) and using the best action (exploitation).
 
-<b> Definition 2.1 </b> (Exploration). We define any action selection $$a$$ such that:
+<b> Definition 1.1 </b> (Exploration). We define any action selection $$a$$ such that:
 
 $$
 \require{cancel}
@@ -78,7 +78,7 @@ $$
 
 as exploration. We are taking actions that are not the actions that maximizes the empirical mean reward. <b> NOTE: </b> this is not the same as the true mean reward. 
 
-<b> Definition 2.2 </b> (Exploitation). We define any action selection $$a$$ such that:
+<b> Definition 1.2 </b> (Exploitation). We define any action selection $$a$$ such that:
 
 $$
 \begin{equation}
@@ -111,7 +111,7 @@ $$
 
 Minimizing regret is equivalent to maximizing rewards. Why use regret then? It actually has better theoretical properties to analyze trade-offs between exploration and exploitation. 
 
-## 2.1.1 Explore-then-commit (ETC)
+## 1.1.1 Explore-then-commit (ETC)
 
 Let rewards be deterministic. Optimal strategy is try every action space once and then choose action with highest reward for all time steps in the future. 
 
@@ -152,7 +152,7 @@ $$
 
 This is better than worst regret $$\text{O}(T)$$ (linear). Worst regret is obtained if agent chooses suboptimal actions or randomly selects actions through T rounds.
 
-## 2.1.2 Upper Confidence Bound (UCB)
+## 1.1.2 Upper Confidence Bound (UCB)
 
 The ETC exploration is "unguided". We select actions uniformly at random. If we are already certain about expected reward of an action, we should not explore it. This means we have to model uncertainty for each action to take the most promising action for exploration.
 
@@ -213,7 +213,7 @@ $$
 
 which is much tighter than ETC. 
 
-## 2.2 Contextual Bandit (CB)
+## 1.2 Contextual Bandit (CB)
 
 Before, we considered a special case where the reward was independent of the state. In CB, we assume that reward is state (or context) dependent. 
 
@@ -238,7 +238,7 @@ $$
 
 now how do we choose actions in CB? We can use the same principles as MAB.
 
-## 2.2.1 LinUCB
+## 1.2.1 LinUCB
 
 LinUCB is a linear contextual bandit algorithm. It assumes that the reward is linear in the context.
 
