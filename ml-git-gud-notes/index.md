@@ -25,15 +25,17 @@ This is a collection of resources I've used to try and git gud in ML. Hopefully,
     - Taught by Pieter Abbeel @ UC Berkeley. 
     - Homeworks are from scratch mini-paper implementations per question. (most valuable)
     - Makes you more solid in your PyTorch and implementation intuition!
-4. Transformer Circuits! - [Website](https://transformer-circuits.pub)
-    - Listed are insightful posts I think are worth reading.
-    - [A mathematical framework for Transformer Circuits.](https://transformer-circuits.pub/2021/framework/index.html)
-        - Comes with exercises
-    - [In-context Learning and Induction Heads](https://transformer-circuits.pub/2022/in-context-learning-and-induction-heads/index.html)
-    - [Circuit Tracking: Revealing Computational Graphs on LMs](https://transformer-circuits.pub/2025/attribution-graphs/methods.html)
-    - [Biology of LLMs](https://transformer-circuits.pub/2025/attribution-graphs/biology.html)
-5. Interpreting GPT - [Website](https://www.lesswrong.com/posts/AcKRB8wDpdaN6v6ru/interpreting-gpt-the-logit-lens)
-6. Vision Circuits! - [Website](https://distill.pub/2020/circuits/)
+
+## 3. RL Stuff
+1. CS285 - [Website](https://sites.google.com/berkeley.edu/cs285/)
+    - Taught by Sergey Levine @ UC Berkeley.
+    - This is a course on RL and covers the basics of RL, policy gradients, actor-critic, PPO, DDPG, SAC, and more.
+    - The homeworks are very well designed and will help you understand the concepts better.
+2. UCL David Silver DeepMind - [Youtube](https://www.youtube.com/playlist?list=PLqYmG7hTraZDM-OYHWgPebj2MfCFzFObQ)
+3. Pulkit 6.8200 - [Website](https://pulkitag.github.io/6.8200/lectures)
+    - This is a course on RL+IL but for robotics.
+    - Well designed to help you setup code in this domain.
+4. 
 
 ## 2. Becoming a good engineer
 1. Full-stack DL - [Website](https://fullstackdeeplearning.com/)
@@ -62,6 +64,15 @@ This is a collection of resources I've used to try and git gud in ML. Hopefully,
     - It goes into probabilistic graphical models (just more bayesian probability)
     - Going through material + homework will get you very comfortable with probability (useful for research)
 2. Matrix Calculus - [Youtube](https://www.youtube.com/playlist?list=PLUl4u3cNGP62EaLLH92E_VCN4izBKK6OE)
+3. Transformer Circuits! - [Website](https://transformer-circuits.pub)
+    - Listed are insightful posts I think are worth reading.
+    - [A mathematical framework for Transformer Circuits.](https://transformer-circuits.pub/2021/framework/index.html)
+        - Comes with exercises
+    - [In-context Learning and Induction Heads](https://transformer-circuits.pub/2022/in-context-learning-and-induction-heads/index.html)
+    - [Circuit Tracking: Revealing Computational Graphs on LMs](https://transformer-circuits.pub/2025/attribution-graphs/methods.html)
+    - [Biology of LLMs](https://transformer-circuits.pub/2025/attribution-graphs/biology.html)
+4. Interpreting GPT - [Website](https://www.lesswrong.com/posts/AcKRB8wDpdaN6v6ru/interpreting-gpt-the-logit-lens)
+5. Vision Circuits! - [Website](https://distill.pub/2020/circuits/)
 
 ## 5. Learning more about ML Research
 1. Yannic Kilcher - [YouTube](https://www.youtube.com/@YannicKilcher)
