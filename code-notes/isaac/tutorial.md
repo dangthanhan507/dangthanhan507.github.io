@@ -842,13 +842,102 @@ Also only call `refresh` functions once per step, and it should be called before
 
 If we call refresh after, we will only get stale data in the next loop. Keep that in mind.
 
-
-
 ---
-## Force Sensors
+## 5. Force Sensors
+
+### 5.1 Rigid Body Force Sensors
+We can attach force sensors to rigid bodies to measure forces and torques. The readings are net forces and torques acting on parent body which include external forces, contact forces, and internal forces (joint drives). Body resting on ground plane will have a net force of zero.
+
+Force sensors are created on assets. To create force sensor, you specify rigid body index where sensor is attached and relative poes of the sensor with respect to body origin. 
+
+```python
+body_idx = gym.find_actor_rigid_body_index(asset, "bodyName")
+
+sensor_pose1 = gymapi.Transform(gymapi.Vec3(0.2, 0.0, 0.0))
+sensor_pose2 = gymapi.Transform(gymapi.Vec3(-0.2, 0.0, 0.0))
+
+sensor_idx1 = gym.create_asset_force_sensor(asset, body_idx, sensor_pose1)
+sensor_idx2 = gym.create_asset_force_sensor(asset, body_idx, sensor_pose2)
+```
+
+You can also pass additional properties to sensor:
+
+```python
+sensor_props = gymapi.ForceSensorProperties()
+sensor_props.enable_forward_dynamics_forces = True
+sensor_props.enable_constraint_solver_forces = True 
+sensor_props.use_world_frame = True
+
+sensor_idx = gym.create_asset_force_sensor(asset, body_idx, sensor_pose, sensor_props)
+```
+
+After constructing these guys, you can access individual force sensors using index:
+
+```python
+actor_handle = gym.create_actor(env, asset, ...)
+num_sensors  = gym.get_actor_force_sensor_count(env, actor_handle)
+for i in range(num_sensors):
+    sensor = gym.get_actor_force_sensor(env, actor_handle, i)
+```
+
+During simulation, you can query latest sensor readings:
+```python
+sensor_data = sensor.get_forces()
+print(sensor_data.force) #Vec3
+print(sensor_data.torque) #Vec3
+```
+
+Get total number of force sensors `gym.get_sim_force_sensor_count(sim)`.
+
+### 5.1.1 Tensor API
+
+We can get a Gym tensor descriptor for all force sensors in simulation using `gym.acquire_force_sensor_tensor(sim)`. 
+
+```python
+_fsdata = gym.acquire_force_sensor_tensor(sim)
+fsdata = gymtorch.wrap_tensor(_fsdata)
+```
+
+The shape of this tensor is (num_force_sensors, 6) and data type is float32. The first 3 floats are force and last 3 are torque.
+
+After each sim step, you can get latest sensor readings calling `gym.refresh_force_sensor_tensor(sim)`.
+
+
+### 5.2 Joint Force Sensors
+
+This is easier to do. Just call `enable_actor_dof_force_sensors` after creating the actor. 
+
+```python
+actor = gym.create_actor(env, ...)
+gym.enable_actor_dof_force_sensors(env, actor)
+```
+
+During simulation, we retrieve forces using `get_actor_dof_forces`. 
+
+```python
+forces = gym.get_actor_dof_forces(env, actor_handle)
+```
+
+This returns numpy array of total forces acting on this actor's DOFF.
+
+These forces will be zero if we do not enable joint force sensors.
+
+### 5.2.1 Tensor API
+
+We can also use the tensor API to get forces. 
+```python
+_forces = gym.acquire_dof_force_tensor(sim)
+forces  = gymtorch.wrap_tensor(_forces)
+```
+
+This is a 1-dim tensor of float32 corresponding to each DOF in simulation. We can get latest sensor reading by calling `gym.refresh_dof_force_tensor(sim)`.
+
+<b> DOF force sensors are only available for PhysX backend. </b>
 
 ---
 ## Simulation Tuning
+
+
 
 ---
 ## Graphics and Camera Sensors
