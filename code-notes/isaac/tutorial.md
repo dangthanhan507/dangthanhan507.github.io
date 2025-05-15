@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Isaac Doc Notes
+title: Isaac Gym Doc Notes
 parent: Isaac
 nav_order: 1
 ---
@@ -935,13 +935,107 @@ This is a 1-dim tensor of float32 corresponding to each DOF in simulation. We ca
 <b> DOF force sensors are only available for PhysX backend. </b>
 
 ---
-## Simulation Tuning
+## 6. Graphics and Camera Sensors
 
 
+The point of this section is to show how to add camera sensors into our setup.
 
----
-## Graphics and Camera Sensors
+### 6.1 Camera Properties
 
+All cameras can be created with parameters passed in GymCameraProperties.
+
+```python
+viewer = gym.create_viewer(sim, gymapi.CameraProperties())
+
+...
+
+camera_props = gymapi.CameraProperties()
+camera_props.horizontal_fov = 75.0 # degrees
+camera_props.width = 1920
+camera_props.height = 1080
+viewer = gym.create_viewer(sim, camera_props)
+```
+
+### 6.2 Camera Sensors
+
+Camera sensors are meant to simulate cameras as if they were an actual sensor. They are not meant to be used for rendering. 
+
+```python
+camera_props = gymapi.CameraProperties()
+camera_props.width  = 128
+camera_props.height = 128
+camera_handle = gym.create_camera_sensor(env, camera_props)
+```
+
+We can set the camera location using `set_camera_location`:
+
+```python
+gym.set_camera_location(camera_handle, env, gymapi.Vec3(x,y,z), gymapi.Vec3(tx,ty,tz))
+```
+
+where `(x,y,z)` is the camera position and `(tx,ty,tz)` is position camera is looking at. All of this is in environment local coordinates. 
+
+The method I like more is to specify `GymTransform`:
+
+```python
+transform = gymapi.Transform()
+transform.p = (x,y,z)
+transform.r = gymapi.Quat.from_axis_angle(gymapi.Vec3(0,1,0), np.radians(45.0))
+gym.set_camera_transform(camera_handle, env, body_handle, transform, gymapi.FOLLOW_TRANSFORM)
+```
+
+Last argument determines attachment behavior. 
+- `gymapi.FOLLOW_POSITION` - camera maintains fixed offset from rigid body but will not rotate.
+- `gymapi.FOLLOW_TRANSFORM` - camera maintains fixed transform relative to rigid body.
+
+if we don't specify, the camera will be fixed in world space.
+
+
+All cameras are rendered together in one API cal.
+
+```python
+gym.render_all_camera_sensors(sim)
+```
+
+We can access camera image using `get_camera_image`:
+
+```python
+color_image = gym.get_camera_image(sim, camera_handle, gymapi.IMAGE_COLOR)
+depth_image = gym.get_camera_image(sim, camera_handle, gymapi.IMAGE_DEPTH)
+seg_image = gym.get_camera_image(sim, camera_handle, gymapi.IMAGE_SEGMENTATION)
+optical_flow_image = gym.get_camera_image(sim, camera_handle, gymapi.IMAGE_OPTICAL_FLOW)
+```
+
+One key thing is to keep the camera stuff in GPU. 
+
+```python
+camera_props = gymapi.CameraProperties()
+camera_props.enable_tensors = True
+cam_handle = gym.create_camera_sensor(env, camera_props)
+```
+
+```python
+camera_tensor = gym.get_camera_image_gpu_tensor(sim, env, cam_handle, gymapi.IMAGE_COLOR)
+torch_camera_tensor = gymtorch.wrap_tensor(camera_tensor)
+```
+
+this allows us to get the camera image as a tensor and use it in PyTorch.
+
+
+Here is a loop for cameras when using simulation in isaacgym:
+```python
+while True:
+
+    gym.simulate(sim)
+    gym.fetch_results(sim, True)
+    gym.step_graphics(sim)
+    gym.render_all_camera_sensors(sim)
+    gym.start_access_image_tensors(sim)
+    #
+    # User code to digest tensors
+    #
+    gym.end_access_image_tensors(sim)
+```
 ---
 ## Python API
 
