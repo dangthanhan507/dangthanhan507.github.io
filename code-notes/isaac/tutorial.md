@@ -294,11 +294,66 @@ while not gym.query_viewer_has_closed(viewer):
 
 ---
 
-## Assets
+## 2. Assets
+
+Lets start off with loading an asset.
+
+```python
+asset_root = "../../assets"
+asset_file = "urdf/franka_description/robots/franka_panda.urdf"
+asset = gym.load_asset(sim, asset_root, asset_file)
+```
+
+We can specify options for asset.
+```python
+asset_options = gymapi.AssetOptions()
+asset_options.fix_base_link = True
+asset_options.armature = 0.01
+
+asset_options.use_mesh_materials = True
+asset_options.mesh_normal_mode = gymapi.COMPUTE_PER_VERTEX
+# asset_options.mesh_normal_mode = gymapi.COMPUTE_PER_FACE
+# asset_options.convex_decomposition_from_submeshes = True
+asset = gym.load_asset(sim, asset_root, asset_file, asset_options)
+```
+
+### 2.1 Overriding Inertial Properties
+
+The URDF and MJCF file formats also specify inertial properties. We can override these properties.
+
+```python
+asset_options.override_com = True
+asset_options.override_inertia = True
+```
+
+This will use values computed from geometries of collision shapes.
+
+### 2.2 Convex Decomposition
+
+```python
+asset_options.vhacd_enabled = True
+```
+
+This enables convex decomposition which makes much more complex collision shape (matches actual mesh).
+
+### 2.3 Procedural Assets (Primitives)
+
+We can create simple geometric assets. Just need to do the following:
+
+```python
+asset_options = gym.AssetOptions()
+asset_options.density = 10.0
+
+box_asset     = gym.create_box(sim, width, height, depth, asset_options)
+sphere_asset  = gym.create_sphere(sim, radius, asset_options)
+capsule_asset = gym.create_capsule(sim, radius, length, asset_options)
+```
 
 ---
 
-## Physics Simulation
+## 3. Physics Simulation
+
+### 3.1 
 
 ---
 
