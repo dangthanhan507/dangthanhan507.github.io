@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Isaac Tutorial
+title: Isaac Doc Notes
 parent: Isaac
 nav_order: 1
 ---
@@ -545,34 +545,315 @@ dof_states["pos"]   # all positions
 dof_states["vel"]   # all velocities
 ```
 
+---
+## 4. Tensor API
+
+This API use GPU-compatible data representations for interacting with simulations.
+
+Tensors from this API are "global" tensors (they hold values for all actors in simulation). This sort of structure makes it very easy to enable data parallelism.
+
+### 4.1 Simulation Setup
+
+This is currently only available for PhysX simulation. 
+
+```python
+sim_params = gymapi.SimParams()
+...
+sim_params.use_gpu_pipeline = True
+sim_params.physx.use_gpu = True
+
+sim = gym.create_sim(compute_device_id, graphics_device_id, gymapi.SIM_PHYSX, sim_params)
+```
+
+We must call `prepare_sim` to initialize internal data structures used by tensor API.
+
+```python
+gym.prepare_sim(sim)
+```
+
+### 4.2 Physics State
+
+After `prepare_sim`, we can acquire physics state tensors. 
+
+### 4.2.1 Actor Root State Tensor
+
+A Gym actor has 1+ rigid bodies. All actors have a root body. The root state tensor holds state of all actor root bodies in simulation. The state of root body is 13-dimensional [position, quaternion, linear velocity, angular velocity]. 
+
+```python
+_root_tensor = gym.acquire_actor_root_state_tensor(sim)
+```
+
+This returns generic tensor descriptor. In order to access contents of tensor, we warp it in PyTorch Tensor object using `gymtorch.wrap_tensor`.
+
+```python
+root_tensor = gymtorch.wrap_tensor(_root_tensor)
+```
+
+now this is a tensor in pytorch. here we can see the structure of the tensor:
+
+```python
+root_positions = root_tensor[:, 0:3]
+root_orientations = root_tensor[:, 3:7]
+root_linvels = root_tensor[:, 7:10]
+root_angvels = root_tensor[:, 10:13]
+```
+
+To update contents of tensors with latest state, call:
+
+```python
+gym.refresh_actor_root_state_tensor(sim)
+```
+
+this will update the tensor with latest state. Generally, do this after each call to `gym.simulate'.
+
+```python
+# ...create sim, envs, and actors here...
+
+gym.prepare_sim()
+
+# acquire root state tensor descriptor
+_root_tensor = gym.acquire_actor_root_state_tensor(sim)
+
+# wrap it in a PyTorch Tensor and create convenient views
+root_tensor = gymtorch.wrap_tensor(_root_tensor)
+root_positions = root_tensor[:, 0:3]
+root_orientations = root_tensor[:, 3:7]
+root_linvels = root_tensor[:, 7:10]
+root_angvels = root_tensor[:, 10:13]
+
+# main simulation loop
+while True:
+    # step the physics simulation
+    gym.simulate(sim)
+
+    # refresh the state tensors
+    gym.refresh_actor_root_state_tensor(sim)
+
+    # ...use the latest state tensors here...
+```
+
+We can also set the root state tensor. 
+
+```python
+# acquire root state tensor descriptor
+_root_tensor = gym.acquire_actor_root_state_tensor(sim)
+
+# wrap it in a PyTorch Tensor
+root_tensor = gymtorch.wrap_tensor(_root_tensor)
+
+# save a copy of the original root states
+saved_root_tensor = root_tensor.clone()
+
+step = 0
+
+# main simulation loop
+while True:
+    # step the physics simulation
+    gym.simulate(sim)
+
+    step += 1
+
+    if step % 100 == 0:
+        gym.set_actor_root_state_tensor(sim, gymtorch.unwrap_tensor(saved_root_tensor))
+```
+
+We can also set root state tensor for a subset of actors using `set_actor_root_state_tensor_indexed`. 
+
+
+### 4.2.3 Degrees of Freedom
+
+Articulated actors have a number of DoFs whose state can be queried and changed. State of each DoF is represented with 2 float32 values: position and velocity. 
+
+The DoF state tensor contains state of all DoFs in simulation. Number of DoFs can be obtained by calling `gym.get_sim_dof_count(sim)`. The DoF states are laid out sequentially. Number of DoFs for a specific actor can be obtained by calling `gym.get_actor_dof_count(env, actor)`. Global index of a specific DoF can be obtained a number of ways:
+- `gym.get_actor_dof_index(env, actor_handle, i, gymapi.DOMAIN_SIM)`.
+- `gym.find_actor_dof_index(env, actor_handle, dof_name, gymapi.DOMAIN_SIM)`
+
+We can access dof state as follows:
+
+```python
+_dof_states = gym.acquire_dof_state_tensor(sim)
+dof_states = gymtorch.wrap_tensor(_dof_states)
+```
+
+Function `refresh_dof_state_tensor` populates tensor with latest data from simulation.
+
+just like the root state tensor, we can set the DoF state tensor using `gym.set_dof_state_tensor(sim, _dof_states)`. 
+
+We can also set the DoF state tensor for a subset of actors using `set_actor_dof_state_tensor_indexed`.
+
+
+### 4.2.4 Rigid Body States
+
+Rigid body states contains state of all rigid bodies in simulation. Each rigid body has 13-dimensional state vector [position, quaternion, linear velocity, angular velocity]. 
+
+We can get total number of rigid bodies using `gym.get_sim_rigid_body_count(sim)`.
+
+We can get rigid body states from an actor using `gym.get_actor_rigid_body_states`.
+
+We can get actor index using `gym.get_actor_rigid_body_index` or `gym.find_actor_rigid_body_index`.
+
+We can get rigid body states using `gym.acquire_rigid_body_state_tensor(sim)`. Which will need to by wrapped using `gymtorch.wrap_tensor`.
+
+```python
+_rb_states = gym.acquire_rigid_body_state_tensor(sim)
+rb_states = gymtorch.wrap_tensor(_rb_states)
+```
+
+We can populate tensor using `gym.refresh_rigid_body_state_tensor(sim)`.
+
+### 4.2.5 Jacobian and Mass Matrices
+
+In order to get these, you need the name of the actor which is provided when calling `create_actor`.
+
+Once you have the name, you can use the following to get the Jacobian and Mass Matrix:
+
+```python
+_jacobian   = gym.acquire_jacobian_tensor(sim, "franka")
+_massmatrix = gym.acquire_mass_matrix_tensor(sim, "franka")
+
+# wrap tensor 
+jacobian    = gymtorch.wrap_tensor(_jacobian)
+mass_matrix = gymtorch.wrap_tensor(_massmatrix)
+```
+
+to refresh we call the following:
+
+```python
+gym.refresh_jacobian_tensors(sim, "franka")
+gym.refresh_mass_matrix_tensors(sim, "franka")
+```
+
+Shape of Mass Matrix is (num_dofs, num_dofs). Shape of Mass Matrix Tensor is (num_envs, num_dofs, num_dofs).
+
+Shape of jacobian depends on number of links, fixed-base or floating-base, and DOFs. Each body has 6 rows in jacobian representing linear and angular motions. The column represents the DOFs.
+
+If actor base is floating, Jacobian shape is (num_envs, num_links, 6, num_dofs + 6). The first 6 columns are the base DOFs.
+
+Here's an example of looking up jacobian of a link:
+
+```python
+link_dict = gym.get_asset_rigid_body_dict(franka_asset)
+dof_dict = gym.get_asset_dof_dict(franka_asset)
+
+link_index = link_dict["panda_hand"]
+dof_index = dof_dict["panda_joint5"]
+
+# for all envs:
+jacobian[:, link_index, :, dof_index + 6]
+
+# for a specific env:
+jacobian[env_index, link_index, :, dof_index + 6]
+```
+
+If base is fixed, we don't have those extra 6 columns. Thus, the shape is (num_envs, num_links - 1, 6, num_dofs).
+
+```python
+# for all envs:
+jacobian[:, link_index - 1, :, dof_index]
+
+# for a specific env:
+jacobian[env_index, link_index - 1, :, dof_index]
+```
+
+### 4.3 Contact Tensors
+
+We can call the net contact forces experienced by each rigid body during last sim step. This is not each individual contact force, but the net force applied to the rigid body. 
+
+```python
+_net_cf = gym.acquire_net_contact_force_tensor(sim)
+net_cf = gymtorch.wrap_tensor(_net_cf)
+
+# netcf shape: (num_rigid_bodies, 3)
+
+gym.refresh_net_contact_force_tensor(sim)
+```
+
+### 4.4 Control Tensors
+
+We show how to apply actions to simulation using tensor API.
+
+```python
+# get total number of DOFs
+num_dofs = gym.get_sim_dof_count(sim)
+
+# generate a PyTorch tensor with a random force for each DOF
+actions = 1.0 - 2.0 * torch.rand(num_dofs, dtype=torch.float32, device="cuda:0")
+
+# apply the forces
+gym.set_dof_actuation_force_tensor(sim, gymtorch.unwrap_tensor(actions))
+```
+
+Actuation forces will only be applied for DOFs whose driveMode was set to `DOF_MODE_EFFORT`.
+
+We can also run `set_dof_position_target_tensor` or `set_dof_velocity_target_tensor` depending on our drive mode.
+
+We can apply forces to rigid bodies using `apply_rigid_body_force_tensors`.
+
+```python
+# apply both forces and torques
+gym.apply_rigid_body_force_tensors(sim, force_tensor, torque_tensor, gymapi.ENV_SPACE)
+
+# apply only forces
+gym.apply_rigid_body_force_tensors(sim, force_tensor, None, gymapi.ENV_SPACE)
+
+# apply only torques
+gym.apply_rigid_body_force_tensors(sim, None, torque_tensor, gymapi.ENV_SPACE)
+```
+
+
+### 4.5 Common Problem (Tensor Lifetime)
+
+Tensor in PyTorch are subject to garbage collection. Gym C++ runtime is not conected with python interpreter, so it doesn't participate in the reference counting of objects. We should be careful to make sure objects are not garbage-collected.
+
+```python
+indices_torch = torch.LongTensor([0, 17, 42])
+indices_gym = gymtorch.unwrap_tensor(indices_torch.to(torch.int32))
+set_actor_root_state_tensor_indexed(sim, states, indices_gym, 3)
+```
+
+This doesn't seem like an issue, but `indices_torch.to(torch.int32)` will be garbage collected since there is no reference to it. This is because gymtorch.unwreap_tensor does not participate in the reference counting. 
+
+
+Instead, we should do the following:
+
+```python
+indices_torch = torch.LongTensor([0, 17, 42])
+indices_torch32 = indices_torch.to(torch.int32) # <--- this reference will keep the tensor alive
+set_actor_root_state_tensor_indexed(sim, states, gymtorch.unwrap_tensor(indices_torch32), 3)
+```
+
+now `indices_torch.to(torch.int32)` will not be garbage collected since `indices_torch32` is referencing it.
+
+### 4.6 Limitations
+
+Only supported for PhysX backend.
+
+A tensor "setter" function should only be called once per step such as `set_actor_root_state_tensor`. We can call other setter functions, but only once per function.
+
+```python
+gym.set_actor_root_state_tensor_indexed(sim, root_states, indices1, n1)
+gym.set_actor_root_state_tensor_indexed(sim, root_states, indices2, n2)
+```
+
+this is no-no.
+
+
+Also only call `refresh` functions once per step, and it should be called before any "setter" functions.
+
+If we call refresh after, we will only get stale data in the next loop. Keep that in mind.
+
 
 
 ---
-
-## Tensor API
-
----
-
 ## Force Sensors
 
 ---
-
 ## Simulation Tuning
 
 ---
-
-## Math Utilities
-
----
-
 ## Graphics and Camera Sensors
 
 ---
-
-## Terrains
-
----
-
 ## Python API
 
 - Checkout IsaacGym_Preview_TacSL_Package/isaacgym/docs/api/python/gym_py.html
