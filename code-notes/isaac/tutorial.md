@@ -353,7 +353,199 @@ capsule_asset = gym.create_capsule(sim, radius, length, asset_options)
 
 ## 3. Physics Simulation
 
-### 3.1 
+### 3.1 Creating Actors
+
+An actor is an instance of `GymAsset`. `create_actor` creates actor and adds it to environment and returns handle to it. Much better to save these handles rather than look them up every time we need to access them.
+
+```python
+envs = []
+actor_handles = []
+
+print("Creating %d environments" % num_envs)
+for i in range(num_envs):
+    env = gym.create_env(sim, env_lower, env_upper, num_per_row)
+    envs.append(evs)
+
+    # add actor
+    actor_handle = gym.create_actor(env, asset, pose, "actor", i, 1)
+    actor_handles.append(actor_handle)
+```
+
+actor_handles are specific to an environment. Functions that operate on actor are `get_actor_*`, `set_actor_*`, and `apply_actor_*`.
+
+### 3.2 Aggregates (only on PhysX)
+
+Aggregate is collection of actors. They do not provide extra simulation functionality, but they tell you that a set of actors will be clustered together, which allow PhysX to optimize its spatial data operations. Creating them gives modest performance boost.
+
+```python
+gym.begin_aggregate(env, max_bodies, max_shapes, True)
+gym.create_actor(env, ...)
+gym.create_actor(env, ...)
+gym.end_aggregate(env)
+```
+
+### 3.3 Actor Components
+
+```python
+num_bodies = gym.get_actor_rigid_body_count(env, actor_handle)
+num_joints = gym.get_actor_joint_count(env, actor_handle)
+num_dofs   = gym.get_actor_dof_count(env, actor_handle)
+```
+
+<b> Joints </b> - these can be fixed, revolute, prismatic.
+
+<b> Degrees of Freedom (DOF) </b> - these are the actuated joints. They are the joints that can be controlled.
+
+
+### 3.4 Controlling Actors
+
+Controlling actors is done through using the DOFs. For each DOF, we can set drive mode, limits, stiffness, damping, and targets. 
+
+<b> Scaling Actors </b> - we can scale their size at runtime. It changes its mas, joint positions, prismatic joint limits, and collision geometry. The CoM isn't updated though. Resetting transforms or velocities or applying forces at the same time as scaling may yield incorrect results. 
+
+<b> DOF Properties and drive Modes </b> - can be accessed with `get_asset_dof_properties` and individual actors (`get_actor_dof_properties`/`set_actor_dof_properties`).
+
+| Name | Data Type | Description |
+|-------- | --------- | ----------- |
+| hasLimits | bool | Whether DOF has limits |
+| lower | float32 | Lower limit |
+| upper | float32 | Upper limit |
+| driveMode | gymapi.DofDriveMode | DOF drive mode |
+| stiffness | float32 | Drive Stiffness |
+| damping | float32 | Drive Damping |
+| velocity | float32 | Max Velocity |
+| effort | float32 | Max effort (force/torque) |
+| friction | float32 | DOF friction |
+| armature | float32 | DOF armature |
+
+`DOF_MODE_NONE` lets joints move freely.
+
+```python
+props = gym.get_actor_dof_properties(env, actor_handle)
+props['driveMode'].fill(gymapi.DOF_MODE_NONE)
+props['stiffness'].fill(0.0)
+props['damping'].fill(0.0)
+gym.set_actor_dof_properties(env, actor_handle, props)
+```
+
+`DOF_MODE_EFFORT` lets us apply efforts to the DOF using `apply_actor_dof_efforts`. 
+
+```python
+# configure the joints for effort control mode (once)
+props = gym.get_actor_dof_properties(env, actor_handle)
+props["driveMode"].fill(gymapi.DOF_MODE_EFFORT)
+props["stiffness"].fill(0.0)
+props["damping"].fill(0.0)
+gym.set_actor_dof_properties(env, actor_handle, props)
+
+# apply efforts (every frame)
+efforts = np.full(num_dofs, 100.0).astype(np.float32)
+gym.apply_actor_dof_efforts(env, actor_handle, efforts)
+```
+
+`DOF_MODE_POS` lets u set target positions for a PD controller. 
+
+```python
+props = gym.get_actor_dof_properties(env, actor_handle)
+props["driveMode"].fill(gymapi.DOF_MODE_POS)
+props["stiffness"].fill(1000.0)
+props["damping"].fill(200.0)
+gym.set_actor_dof_properties(env, actor_handle, props)
+
+targets = np.zeros(num_dofs).astype('f')
+gym.set_actor_dof_position_targets(env, actor_handle, targets)
+```
+
+if DOF is linear, target is in meters. If DOF is angular, target is in radians.
+
+if we want to set random positions for the DOF, here it is:
+
+```python
+dof_props = gym.get_actor_dof_properties(envs, actor_handles)
+lower_limits = dof_props['lower']
+upper_limits = dof_props['upper']
+ranges = upper_limits - lower_limits
+
+pos_targets = lower_limits + ranges * np.random.random(num_dofs).astype('f')
+gym.set_actor_dof_position_targets(env, actor_handle, pos_targets)
+```
+
+`DOF_MODE_VEL` is for velocity control.
+
+```python
+props = gym.get_actor_dof_properties(env, actor_handle)
+props["driveMode"].fill(gymapi.DOF_MODE_VEL)
+props["stiffness"].fill(0.0)
+props["damping"].fill(600.0)
+gym.set_actor_dof_properties(env, actor_handle, props)
+
+vel_targets = np.random.uniform(-math.pi, math.pi, num_dofs).astype('f')
+gym.set_actor_dof_velocity_targets(env, actor_handle, vel_targets)
+```
+
+Unlike efforts, the ones with controllers only require targets to be set every tame targets need change. Efforts need to be set every frame.
+
+<b> NOTE: </b> Tensor Control API allows alternative ways to applying controls without setting in CPU. We can run simulations entirely on GPU.
+
+### 3.5 Physics State
+
+#### 3.5.1 Rigid Body States
+
+```python
+actor_body_states = gym.get_actor_rigid_body_states(env, actor_handle, gymapi.STATE_ALL)
+env_body_states = gym.get_env_rigid_body_states(env, gymapi.STATE_ALL)
+sim_body_states = gym.get_sim_rigid_body_states(sim, gymapi.STATE_ALL)
+```
+
+You can get states for an actor, an environment, or entire simulation.
+
+This returns structured numpy arrays. Last argument is a flag for what it should return. `STATE_POS` only returns positions. `STATE_VEL` only returns velocities. `STATE_ALL` returns both positions and velocities.
+
+
+We can access the states like so:
+
+```python
+body_states["pose"]             # all poses (position and orientation)
+body_states["pose"]["p"])           # all positions (Vec3: x, y, z)
+body_states["pose"]["r"])           # all orientations (Quat: x, y, z, w)
+body_states["vel"]              # all velocities (linear and angular)
+body_states["vel"]["linear"]    # all linear velocities (Vec3: x, y, z)
+body_states["vel"]["angular"]   # all angular velocities (Vec3: x, y, z)
+```
+
+We can set the states like so:
+
+```python
+gym.set_actor_rigid_body_states(env, actor_handle, body_states, gymapi.STATE_ALL)
+gym.set_env_rigid_body_states(env, body_states, gymapi.STATE_ALL)
+gym.set_sim_rigid_body_states(sim, body_states, gymapi.STATE_ALL)
+```
+
+We can only find the index of a specific rigid body using the following:
+
+```python
+i1 = gym.find_actor_rigid_body_index(env, actor_handle, "body_name", gymapi.DOMAIN_ACTOR)
+i2 = gym.find_actor_rigid_body_index(env, actor_handle, "body_name", gymapi.DOMAIN_ENV)
+i3 = gym.find_actor_rigid_body_index(env, actor_handle, "body_name", gymapi.DOMAIN_SIM)
+```
+
+### 3.5.2 DOF States
+
+We can also work with reduced coordinates. 
+
+```python
+dof_states = gym.get_actor_dof_states(env, actor_handle, gymapi.STATE_ALL)
+
+gym.set_actor_dof_states(env, actor_handle, dof_states, gymapi.STATE_ALL)
+```
+
+
+```python
+dof_states["pos"]   # all positions
+dof_states["vel"]   # all velocities
+```
+
+
 
 ---
 
