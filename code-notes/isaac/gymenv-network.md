@@ -175,7 +175,7 @@ class Network(NetworkBuilder.BaseNetwork):
 
 As we can see, it takes each observation taken by input_preprocessing and throws it into a CNN or MLP or None. You can track this by the `next_input_shape` variable which increases depending on whether it is using a CNN or MLP or None.
 
-To better understand how to add our on observation head, we look at `_build_conv`:
+To better understand how to add our on observation head, we look at `_build_conv` which is inside rl_games:
 
 ```python
 def _build_conv(self, ctype, **kwargs):
@@ -213,3 +213,80 @@ We use the arguments from the command as `__init__` arguments to the builder and
 
 ### 3.1.3 Adding your own Input Preprocessor
 
+First you have to add `_build_pointnet` in the `rl_games` implementation along with `_build_conv` and `_build_mlp`. It's pretty straightforward.
+
+Next, you add this to the `Network.__init__`:
+
+```python
+    class Network(NetworkBuilder.BaseNetwork):
+        def __init__(self, params, **kwargs):
+
+            # Network structure:
+            # obs is a dictionary, each gets processed according to the network in input_params.
+            # Then features from each are flattened, concatenated, and go through an MLP.
+            # for example
+            #    camera -> CNN ->
+            #                    |-> MLP -> action
+            # joint_pos -> MLP ->
+
+            actions_num = kwargs.pop('actions_num')
+            input_shape = kwargs.pop('input_shape')
+            self.value_size = kwargs.pop('value_size', 1)
+            self.num_seqs = num_seqs = kwargs.pop('num_seqs', 1)
+            NetworkBuilder.BaseNetwork.__init__(self)
+            self.load(params)
+            # self.actor_cnn = nn.Sequential()
+            # self.critic_cnn = nn.Sequential()
+
+            self.input_networks_actor = nn.ModuleDict()
+            self.input_networks_critic = nn.ModuleDict()
+
+            self.actor_mlp = nn.Sequential()
+            self.critic_mlp = nn.Sequential()
+
+            # size of the preprocessing of inputs before the main MLP
+            input_out_size = 0
+
+            for input_name, input_config in self.input_params.items():
+                has_cnn = 'cnn' in input_config
+                has_mlp = 'mlp' in input_config
+                has_pnet = 'pnet' in input_config
+
+                member_input_shape = torch_ext.shape_whc_to_cwh(input_shape[input_name])
+                networks_actor = []
+                networks_critic = []
+
+                if has_pnet:
+                    pnet_config = input_config['pnet']
+                    pnet_args = {
+                        'in_channel': pnet_config['in_channel'],
+                        'out_channel': pnet_config['out_channel'],
+                        'use_layernorm': False,
+                        'final_norm': 'none',
+                        'use_projection': True
+                    }
+                    networks_actor.append(self._build_pointnet(**pnet_args))
+                    # TODO: make init
+                    if self.separate:
+                        networks_critic.append(self._build_pointnet(**pnet_args))
+                    next_input_shape = pnet_config['out_channel']  # output shape from the pointnet
+                ... # the other types
+```
+
+Next, you add this command to  your training script:
+
+```python
+task.env.obsDims={
+    object_pcd:[500,3]
+}
+train.params.network.input_preprocessors={
+    object_pcd:{
+        pnet:{
+            in_channel:3,
+            out_channel:128
+        }
+    }
+}
+```
+
+I've already included `object_pcd` in my previous observation notes.
