@@ -1,8 +1,8 @@
 ---
 layout: default
-title: IsaacGymEnv Notes
+title: IsaacGymEnv Obs Notes
 parent: Isaac
-nav_order: 1
+nav_order: 3
 ---
 
 Now that we have a rudimentary understanding of the Isaac Gym API, we're going to dive into how `IsaacGymEnv` works. I'll do a backtracking approach. As in, I'll run code snippets and then figure out how each part works. The codebase is way too large, that I can only understand enough to get things working.

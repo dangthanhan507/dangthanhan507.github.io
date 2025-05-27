@@ -2,7 +2,7 @@
 layout: default
 title: IsaacGymEnv Camera Notes
 parent: Isaac
-nav_order: 1
+nav_order: 4
 ---
 
 # 2. Understanding how cameras work in IsaacGymEnv

@@ -2,7 +2,7 @@
 layout: default
 title: Isaac Gym Doc Notes
 parent: Isaac
-nav_order: 1
+nav_order: 2
 ---
 
 # Isaac Gym Notes (for An)

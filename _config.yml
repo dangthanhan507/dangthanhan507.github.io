@@ -81,6 +81,8 @@ gh_edit_repository: "https://github.com/dangthanhan507/dangthanhan507.github.io"
 gh_edit_branch: "master"
 gh_edit_view_mode: "blob"
 
+color_scheme: dark
+
 footer_content: "By An Dang."
 
 # ga_tracking: G-7CLFWW7J36
