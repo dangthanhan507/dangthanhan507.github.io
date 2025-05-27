@@ -82,6 +82,7 @@ gh_edit_branch: "master"
 gh_edit_view_mode: "blob"
 
 color_scheme: dark
+remote_color_scheme: dark
 
 footer_content: "By An Dang."
 
