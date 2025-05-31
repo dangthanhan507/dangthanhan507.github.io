@@ -2,5 +2,5 @@
 layout: default
 title: Benchmarks
 parent: Code Notes
-nav_order: 1
+nav_order: 3
 ---

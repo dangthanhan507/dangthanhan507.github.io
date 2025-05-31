@@ -2,5 +2,5 @@
 layout: default
 title: Isaac
 parent: Code Notes
-nav_order: 1
+nav_order: 5
 ---
