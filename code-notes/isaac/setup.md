@@ -68,6 +68,42 @@ python3 -m pip install torch==1.8.1 --no-cache-dir --force-reinstall --index-url
 python3 -m pip install torch==1.13.1
 ```
 
+## Multi-GPU Setup
+
+So IsaacGymEnvs is really terrible when it comes to working with multiple GPUs. Currently in our setup, it only works on the last GPU in our lambda server. I want to change this. A possible solution was proposed in [manipgen](https://github.com/mihdalal/manipgen). 
+
+First step is to install vulkan device chooser `https://github.com/aejsmith/vkdevicechooser`.
+
+0. `git clone https://github.com/aejsmith/vkdevicechooser`
+1. `cd vkdevicechooser`
+2. `sudo apt-get install libvulkan-dev vulkan-validationlayers-dev`
+3. `sudo apt-get install meson`
+4. `meson builddir --prefix=/usr`
+5. `ninja -C builddir`
+6. `sudo meson install -C builddir`
+
+add this to `.bashrc` file
+
+```
+export CUDA_DEVICE_ORDER="PCI_BUS_ID"
+alias gpu0="export CUDA_VISIBLE_DEVICES=0"
+alias gpu1="export CUDA_VISIBLE_DEVICES=1"
+alias gpu2="export CUDA_VISIBLE_DEVICES=2"
+alias gpu3="export CUDA_VISIBLE_DEVICES=3"
+
+alias vulkan0="export ENABLE_DEVICE_CHOOSER_LAYER=1 VULKAN_DEVICE_INDEX=0"
+alias vulkan1="export ENABLE_DEVICE_CHOOSER_LAYER=1 VULKAN_DEVICE_INDEX=1"
+alias vulkan2="export ENABLE_DEVICE_CHOOSER_LAYER=1 VULKAN_DEVICE_INDEX=2"
+alias vulkan3="export ENABLE_DEVICE_CHOOSER_LAYER=1 VULKAN_DEVICE_INDEX=3"
+export VK_ICD_FILENAMES=/usr/share/vulkan/icd.d/nvidia_icd.json
+export DISABLE_LAYER_NV_OPTIMUS_1=1
+export DISABLE_LAYER_AMD_SWITCHABLE_GRAPHICS_1=1
+```
+
+Before running your script, run `vulkanX` and `gpuY` and test our what `X` and `Y` should be to run on the same gpu.
+
+use these flags to choose vulkan device index. device indices can be found by running `vulkaninfo`.
+
 ## Jayjun's !Happiness
 
 Branch overview:
