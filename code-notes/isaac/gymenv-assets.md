@@ -27,3 +27,4 @@ When the code is creating the environments for the first time, it can use the ch
 
 **NOTE:** It seems that the `TacSLEnvInsertion` and `TacSLTaskInsertion` classes have fundamentally hard-coded the `plug/socket` asset paradigm into their design. This means we cannot support multi-object insertion feature into this without significant change to these classes. It's much better fundamentally to create our own environment and our own task based on that environment. 
 
+These assets are known in `TacSLEnvInsertion`. The yaml file containing the urdf paths for these assets are hard-coded in `self.asset_info_insertion` to a particular path. `IsaacGymEnvs/assets/tacsl/yaml/industreal_asset_info_pegs.yaml` is the path. 

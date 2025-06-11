@@ -43,3 +43,38 @@ Here's a breakdown of how  these methods will be used:
 - `_acquire_env_tensors`: called in `__init__` of the class that defines the method.
 - `refresh_env_tensors`: use it whenever you want environment tensors to match simulation context.
 
+Additionally, we specify environment specific parameters in `isaacgymenvs/cfg/task/`. For `TacSLEnvInsertion` we have the following YAML file:
+
+```yaml
+# See schema in factory_schema_config_env.py for descriptions of common parameters.
+
+defaults:
+    - TacSLBase
+    - _self_
+    - /factory_schema_config_env
+
+sim:
+    disable_franka_collisions: False
+
+env:
+    env_name: 'TacSLEnvInsertion'
+
+    desired_subassemblies: ['round_peg_hole_8mm',
+                            'round_peg_hole_12mm',
+                            'round_peg_hole_16mm',
+                            'rectangular_peg_hole_8mm',
+                            'rectangular_peg_hole_12mm',
+                            'rectangular_peg_hole_16mm']
+    plug_lateral_offset: 0.1  # Y-axis offset of plug before initial reset to prevent initial interpenetration with socket
+```
+
+These parameters are used for environment generation (how big a socket/plug) should be. 
+
+In the environment, it also has knowledge of the task yaml file which it uses to load assets. 
+
+In this class you do the following:
+- create assets
+- create actors and track their handles
+- set friction properties of objects
+- create environment tensors (e.g. franka_base_pos, cube_pos/cube_quat)
+

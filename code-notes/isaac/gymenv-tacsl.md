@@ -73,3 +73,8 @@ we got depth + shear and colored it like depth is visualized also added object t
 
 
 ![](../../assets/images/code/isaac/shear_force_panda.png)
+
+
+![](../../assets/images/code/isaac/coupled_pointshear1.png)
+
+![](../../assets/images/code/isaac/coupled_pointshear2.png)
