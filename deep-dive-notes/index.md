@@ -3,9 +3,10 @@
 # To modify the layout, see https://jekyllrb.com/docs/themes/#overriding-theme-defaults
 
 layout: default
-title:  Deep Dive Graph Papers
+title:  Deep Dive Ideas
 math: katex
 has_children: true
 ---
 
-This is a collection of notes on GNN papers. This is where I have to deep dive into the papers and understand them. I'll try to move background into the preliminary notes.
+This is a collection of deep dives on concepts. Normally I do this when getting into concepts or debugging things I don't have a strong understanding in.
+
