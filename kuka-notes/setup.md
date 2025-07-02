@@ -6,7 +6,6 @@ layout: default
 parent: Kuka FRI Notes
 title: Setup FRI
 math: katex
-has_children: true
 ---
 
 # Setup FRI
