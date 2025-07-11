@@ -217,3 +217,61 @@ class BasePlayer(object):
 We can see `self.env` is created and we use it during `runner.run`. 
 
 **TLDR**: So if we want to create a new environment, we just have to register it in `env_configurations` and `vecenv` like we did above.
+
+# IsaacGymEnvs: Things needed in environment
+
+For IsaacGymEnvs, we create an environment by calling the following
+
+```python
+isaacgym_task_map = {
+    "AllegroHand": AllegroHand,
+    "AllegroKuka": resolve_allegro_kuka,
+    "AllegroKukaTwoArms": resolve_allegro_kuka_two_arms,
+    "AllegroHandManualDR": AllegroHandDextremeManualDR,
+    "AllegroHandADR": AllegroHandDextremeADR,
+    "Ant": Ant,
+    "Anymal": Anymal,
+    "AnymalTerrain": AnymalTerrain,
+    "BallBalance": BallBalance,
+    "Cartpole": Cartpole,
+    "FactoryTaskGears": FactoryTaskGears,
+    "FactoryTaskInsertion": FactoryTaskInsertion,
+    "FactoryTaskNutBoltPick": FactoryTaskNutBoltPick,
+    "FactoryTaskNutBoltPlace": FactoryTaskNutBoltPlace,
+    "FactoryTaskNutBoltScrew": FactoryTaskNutBoltScrew,
+    "IndustRealTaskPegsInsert": IndustRealTaskPegsInsert,
+    "IndustRealTaskGearsInsert": IndustRealTaskGearsInsert,
+    "FrankaCabinet": FrankaCabinet,
+    "FrankaCubeStack": FrankaCubeStack,
+    "Humanoid": Humanoid,
+    "HumanoidAMP": HumanoidAMP,
+    "Ingenuity": Ingenuity,
+    "Quadcopter": Quadcopter,
+    "ShadowHand": ShadowHand,
+    "TacSLTaskInsertion": TacSLTaskInsertion,
+    "AmazonTaskInsertion": AmazonTaskInsertion,
+    "Trifinger": Trifinger,
+}
+...
+env = isaacgym_task_map[task_name](
+    cfg=task_config,
+    rl_device=_rl_device,
+    sim_device=_sim_device,
+    graphics_device_id=graphics_device_id,
+    headless=headless,
+    virtual_screen_capture=virtual_screen_capture,
+    force_render=force_render,
+)
+```
+
+Out of this `env` needs the following properties:
+```python
+env.observation_space
+env.action_space 
+env.agents # 1
+env.value_size # 1
+env.get_number_of_agents # optional
+
+obs = env.reset()
+obs, rewards, dones, infos = env.step(actions)
+```
