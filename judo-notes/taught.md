@@ -17,6 +17,7 @@ math: katex
     - Koshi Guruma
     - Uchi Mata (Hip)
     - Harai Goshi
+    - Tai Otoshi
 - Ashi Waza (Foot stuff)
     - O Soto Gari
     - Deashi Harai
@@ -29,9 +30,12 @@ math: katex
     - Yoko Shio Gatame
     - Uki Gatame
     - Kami Shiho Gatame
-- Sacrifice Throws (not focusing on these)
+- Sacrifice Throws
     - Kouchi Makikomi
     - Tomoe Nage
+    - Sumi Gaeshi
+- Non-competitive Throws
+    - Sukui Nage (single leg)
 ---
 
 ## Forward throws:
