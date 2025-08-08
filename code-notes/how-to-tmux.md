@@ -33,3 +33,10 @@ To kill a specific tmux session:
 ```bash
 tmux kill-session -t [session-name]
 ```
+
+Extra things for session management:
+```bash
+ctrl+b c # Create a new window
+ctrl+b , # Rename the current window
+ctrl+b s # List all windows
+```
