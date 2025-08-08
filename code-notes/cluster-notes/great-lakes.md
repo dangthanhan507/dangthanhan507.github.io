@@ -22,6 +22,26 @@ ssh [uniqname]@greatlakes.arc-ts.umich.edu
 
 You'll find yourself in your home directory, which is located at `/home/[uniqname]`.
 
+Keep in mind that you are in the login node. This is a place to view job results and submit new jobs. It cannot be used to run application workloads. 
+
+We will mainly run sbatch and srun to work.
+
+We can check if we can submit jobs by running the following command:
+
+```console
+[andang@gl-login1 ~]$ hostname -s
+gl-login1
+[andang@gl-login1 ~]$ srun --cpu-bind=none hostname -s
+srun: job 29842513 queued and waiting for resources
+srun: job 29842513 has been allocated resources
+gl3051
+[andang@gl-login1 ~]$
+```
+
+As you can see, srun is a fully blocking command.
+
+
+
 ## Creating a batch job
 
 ```bash
@@ -65,7 +85,7 @@ echo "Hello World"
 srun --cpu-bind=none hostname -s
 ```
 
-This allocates one node with one processor, 1 GB of memory, and a time limit of 15 minutes. The `srun` command runs the `hostname` command on the allocated node. We also print "Hello World" to the console.
+This allocates one node with one processor, 1 GB of memory, and a time limit of 15 minutes. We print "Hello World" to the console.
 
 Output:
 ```console
@@ -75,38 +95,21 @@ srun: job 29838616 has been allocated resources
 gl3018
 ```
 
-## Batch job: Options for requesting resources
+We can run salloc to do interafctive job. 
+```shell-session
+[user@gl-login1 ~]$ salloc --account=test
+salloc: Pending job allocation 10081688
+salloc: job 10081688 queued and waiting for resources
+salloc: job 10081688 has been allocated resources
+salloc: Granted job allocation 10081688
+salloc: Waiting for resource configuration
+salloc: Nodes gl3052 are ready for job
+[user@gl3052 ~]$ hostname
+gl3052.arc-ts.umich.edu
+[user@gl3052 ~]$
+```
 
-| Option | SLURM Command (#SBATCH) | Example |
-| ------ | ----------------------- | ------- |
-| Job name | `--job-name=<name>` | `--job-name=asdf` |
-| Account | `--account=<account>` | `--account=test` This account is from the provider account  |
-| Queue | `--partition=<queue>` | `--partition=standard` We can choose "standard", "gpu" (GPU jobs only), largemem (large memory), viz, debug, standard-oc (oc=on-campus software) |
-| Wall time limit | `--time=<dd-hh:mm:ss>` | `--time=10:00` (10 minutes) If you want if you got the write wall time, you can try on debug partition |
-| Node count | `--nodes=<count>` | `--nodes=3` |
-| Process count per node | `--ntasks-per-node=<count>` | `--ntasks-per-node=1` invoke ntasks on each node |
-| Core count (per process) | `--cpus-per-task=<cores>` | `--cpus-per-task=1` Without specifying, it defaults to 1 processor per task |
-| Memory limit | `--mem=<limit>` (Memory per node in GiB, MiB, KiB) | `--mem=12000m` (12 GiB roughly) |
-| Minimum memory per processor | `--mem-per-cpu=<memory>` | `--mem-per-cpu=1000m` (1 GiB per CPU) |
-| Request GPUs | `--gres=gpu:<count>` `--gpus=[type:]<number>` | `--gres=gpu:2` `gpus=2` |
-| Process count per GPU | `--ntasks-per-gpu=<count>` Must be used with `--ntasks` or `--gres=gpu:` | `--ntasks-per-gpu=1` `--gres=gpu:4` 2 tasks per GPU times 4 GPUS = 8 tasks total |
+## Going on interactive mode
 
-## Batch job: Environment variables and logs
-
-| Option | SLURM Command (#SBATCH) | Example |
-| ------ | ----------------------- | ------- |
-| Copy environment | `--export=ALL` | `--export=ALL` This copies all environment variables to the job |
-| Set Env variable | `--export=<variable=value,var2=val2>` | `--export=EDITOR=/bin/vim` |
-| Standard output file | `--output=<file path>` (path must exist) | `--output=/home/%u/%x-%j.log` NOTE: %u is the user, %x is the job name, %j is the job ID |
-| Standard error file | `--error=<file path>` (path must exist) | `--error=/home/%u/%x-%j.err` |
-
-
-## Batch job: job control
-
-| Option | SLURM Command (#SBATCH) | Example |
-| ------ | ----------------------- | ------- |
-| Job array | `--array=<array indices>` | `--array=0-15` |
-| Job dependency | `--dependency=after:jobID[:jobID...]` | `--dependency=after:1234[:1233]` |
-| Email address | `--mail-user=<email>` | `--mail-user=uniqname@umich.edu` |
-| Defer job til time | `--begin=<date/time>` | `--begin=2020-12-25T12:30:00` |
+[](https://documentation.its.umich.edu/node/4994) Check out this link for more information on how to do things interactively on Great Lakes.
 
