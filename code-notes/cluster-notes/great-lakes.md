@@ -40,7 +40,68 @@ gl3051
 
 As you can see, srun is a fully blocking command.
 
+## Loading modules
 
+There is a list of modules available to load in slurm. Here are a list of commands we can use to work with modules:
+
+```bash
+module list # list all loaded modules
+module avail # list all available modules
+module load [module_name] # load a module
+module unload [module_name] # unload a module
+module purge # unload all modules
+module unload [module_name] # unload a specific module
+module spider # list all possible modules
+module whatis [module_name] # show information about a specific module
+module save [module_name] # save the current module state
+```
+
+Useful modules on Great Lakes include:
+
+```bash
+module load python #python3.13
+module load mamba  # smaller version of anaconda... also loads python, can't load python and mamba at the same time
+module load matlab
+module load gurobi
+module load julia
+module load cmake
+module load gcc
+module load git
+module load tmux
+module load ffmpeg
+
+module load cuda
+module load cudnn
+module load tensorflow
+module load tensorrt
+
+module load code-server
+```
+
+These are taken from the documentation [on the man page](https://linux.die.net/man/1/module).
+
+## Inside a node
+
+We can mess around with a node by using `salloc` to allocate resources interactively.
+```bash
+salloc --account=test
+```
+
+Once inside, we can access the `/tmp` directory which is unique for each node. We can check that it is specific to the node by running:
+
+```bash
+salloc --account=test
+touch /tmp/hello.txt
+cat /tmp/hello.txt
+exit
+cat /tmp/hello.txt
+```
+
+And we'll notice that once outside, the file is not there anymore. This is because `/tmp` is a temporary directory that is unique to each node and is cleared when the node is rebooted or when the job ends.
+
+This is a good spot to store temporary files that you don't need to keep after the job ends.
+
+**NOTE**: `/home` directory has a hard limit of 80 GB.
 
 ## Creating a batch job
 
@@ -94,6 +155,34 @@ srun: job 29838616 queued and waiting for resources
 srun: job 29838616 has been allocated resources
 gl3018
 ```
+
+## One Node, GPU
+
+```bash
+#!/bin/bash 
+
+#SBATCH --job-name test_gpu
+#SBATCH --account=test
+#SBATCH --nodes=1
+#SBATCH --time=00:15:00
+
+#SBATCH --cpus-per-task=4
+#SBATCH --mem-per-cpu=1g
+#SBATCH --partition=gpu
+#SBATCH --gres=gpu:1 --gpus=1
+
+#SBATCH --mail-type=NONE
+#SBATCH --output=/home/%u/workspace/%x-%j.out
+
+# COMMENT: The application(s) to execute along with its input arguments and options:
+module load mamba cuda cudnn
+python hello.py
+nvidia-smi
+```
+
+Using this, we can allocate a gpu node and run nvidia-smi to check the gpu status. This all works. 
+
+## Interactive jobs
 
 We can run salloc to do interafctive job. 
 ```shell-session
