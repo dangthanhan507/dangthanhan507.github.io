@@ -202,3 +202,42 @@ gl3052.arc-ts.umich.edu
 
 [](https://documentation.its.umich.edu/node/4994) Check out this link for more information on how to do things interactively on Great Lakes.
 
+## Scratch directory
+
+Scratch directory is maintained by the account you are under (not the user, but the SLURM account which is typically from the PI).
+
+It is located at `/scratch/[account_name]/[subaccount_name]/[uniqname]`.
+
+We can check the usage of the scratch directory by running:
+
+```bash
+scratch-quota [scratch_directory]
+```
+
+We can also check user usage of `/home` directory by running:
+
+```bash
+home-quota
+```
+
+## Turbo directory
+
+For great lakes, we can access this through `/nfs/turbo/[turbo_account_name]/`. Use this to store large files for a long time (doesn't automatically scrap like in `/scratch`).
+
+We can also mount turbo directories.
+
+This is how you do it with sshfs:
+
+```bash
+sudo apt-get install sshfs
+sudo modprobe fuse
+mkdir ~/remote_dir
+sshfs username@greatlakes.arc-ts.umich.edu:/nfs/turbo/[account_name]/[uniqname]/something ~/remote_dir
+```
+
+To unmount you can use:
+
+```bash
+fusermount -u ~/remote_dir # hasn't worked for me
+sudo umount -l ~/remote_dir # this works consistently
+```
