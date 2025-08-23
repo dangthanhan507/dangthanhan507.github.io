@@ -2,7 +2,10 @@
 layout: default
 title: Tactile RL Notes
 parent: Deep Dive Ideas
-math: katex
+mathjax: true
+tags: 
+  - latex
+  - math
 has_children: true
 ---
 
@@ -122,6 +125,32 @@ Note that in here, the language instruction is used to "steer" the actions of a 
 
 ## 4. RL approach (Simulation)
 
+Now reinforcement learning is not necessarily the next step up after BC, but it shows an interesting path forward. The jist of RL is the use of simulation to learn a policy. Can we get a robot to freely explore an environment and learn a policy that achieves a specified task? The big issue with RL is the sim2real gap. Can a robot learn a policy in simulation and transfer it to the real world?
+
+If we can close this sim2real gap, then we can leverage the versatility and capabilities of simulation and use RL as a means of leveraging simulation to train strong manipulation policies. 
+
+Using simulation, we can completely forego the need for human data collection or at least tremendously reduce it. 
+
+**RL OVERVIEW**: The current state-of-the-art approach to robotics RL is to use PPO to train a neural network similar to the one used in BC in simulation. We can quickly summarize RL as follows:
+
+$$
+\begin{equation}
+\max_{d} J(\theta + d) - J(\theta) \\
+\text{s.t.} \quad \mathbb{E}_s \left[ D_{KL}(\pi_\theta(a \mid s) || \pi_{\theta + d}(a \mid s)) \right] \leq \epsilon
+\end{equation}
+$$
+
+- $$J(\theta)$$ = $$\sum_{i=1}^N \sum_{t=1}^T \nabla_\theta \log \pi(a \mid s_t^t) A(s_t,a_t)$$
+- $$A(s_t,a_t)$$ = $$Q(s_t,a_t) - V(s_t)$$
+
+where we use an Actor-Critic method which contains an actor network and critic network (value function). The actor and critic can be assumed to have almost the same architecture until the very end where the actor outputs actions and the critic outputs a value. The actor generates actions on every rollout and is seen in this equation in $$a$$ and $$\pi$$ and the critic determines $$V(s_t)$$ which will also determine the Q-function $$Q(s_t,a_t)$$. We define the reward function based on the task we want to perform. 
+
+If we just observed $$\nabla_\theta \log \pi(a \mid s_t^t) A(s_t,a_t)$$ and set the advantage function to 1, we can see that this is the gradient of the log-likelihood of the actions taken. In other words, our policy gradient method is already taking gradients to maximize the likelihood of actions taken. This is a common method used in generative modeling to match a distribution. Once we add in the advantage function, we are now weighing which action distributions are better than others. In order for RL to train a good policy, we have to be able to use rewards to guide the policy towards actions that we know will help achieve the task. Without a good reward function, we could likelihood update our network towards a bad action distribution and possibly stay in that bad action distribution without hope of recovering.
+
+**STATE SPACE?**: Based on this already, we can see that RL has a similar problem to control theory. How do you go about defining a reward function if there is no clear notion of state? 
+- Actually, you can normally simulate piles of objects and liquids in simulation, so you can define a reward function saying if a pile is in a reasonable configuration.
+- However, this assumes that you can actually simulate at all.
+- Based on this, simulation already requires you to define some sort of state for these weird objects, so we use that to define a reward function.
 
 
 
