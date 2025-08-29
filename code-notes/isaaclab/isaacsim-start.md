@@ -1,11 +1,12 @@
 ---
 layout: default
-title: Getting Started Isaac Sim API
+title: Isaac Sim Python Start
 parent: Isaac Lab
 ---
 
 # IsaacSim Core
 
+Understanding isaacsim core is important because that is what TacEX uses mostly.
 
 Adding objects using Core API is as simple as this...
 
