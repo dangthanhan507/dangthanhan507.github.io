@@ -1,11 +1,11 @@
 ---
 layout: default
-title: "AEROSP 740: Online Learning for Control"
+title: "MATH 540: Mathematics for Biological Networks"
 parent: Class Notes
 mathjax: true
 tags: 
   - latex
   - math
 has_children: true
+nav_order: 1
 ---
-

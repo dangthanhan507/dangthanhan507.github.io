@@ -1,6 +1,6 @@
 ---
 layout: default
-title: "MATH 658: Geometric Mechanics"
+title: "Algebraic Techniques for Optimization"
 parent: Class Notes
 mathjax: true
 tags: 
@@ -8,3 +8,5 @@ tags:
   - math
 has_children: true
 ---
+
+# 6.256
