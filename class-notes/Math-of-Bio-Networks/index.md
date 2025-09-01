@@ -1,6 +1,6 @@
 ---
 layout: default
-title: "MATH 658: Geometric Mechanics"
+title: "MATH 540: Mathematics for Biological Networks"
 parent: Class Notes
 mathjax: true
 tags: 

@@ -1,6 +1,6 @@
 ---
 layout: default
-title: "MATH 658: Geometric Mechanics"
+title: "AEROSP 740: Online Learning for Control"
 parent: Class Notes
 mathjax: true
 tags: 
@@ -8,3 +8,4 @@ tags:
   - math
 has_children: true
 ---
+
