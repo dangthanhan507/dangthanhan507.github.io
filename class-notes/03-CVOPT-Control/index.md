@@ -7,5 +7,5 @@ tags:
   - latex
   - math
 has_children: true
-nav_order: 
+nav_order: 3
 ---
