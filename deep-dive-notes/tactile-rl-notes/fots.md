@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Sim2real Tactile RL
+title: FOTS
 parent: Tactile RL Notes
 mathjax: true
 tags: 
@@ -9,16 +9,6 @@ tags:
 has_children: true
 ---
 
-# Sim2real Tactile RL
-
-Our main focus is on sim2real tactile RL. That is, training RL policies in simulation with tactile sensing and transferring them to the real world.
-
-Simulating tactile rgb:
-- [Taxim](https://arxiv.org/pdf/2109.040273)
-- [TacSL](https://ieeexplore.ieee.org/abstract/document/10912733)
-    - Technically it comes from: [tactilesim](https://openreview.net/pdf?id=6BIffCl6gsM)
-- [FOTS](https://arxiv.org/abs/2404.19217)
-- [Sim2shear-Real2Sim2Real](https://arxiv.org/pdf/2508.20561)
 
 # FOTS
 
@@ -121,3 +111,23 @@ def _motion_callback(self,xx,yy):
 
   return xx_,yy_
 ```
+
+# FOTS Calibration
+
+For calibration (based on README.md of codebase), we take ~45 tactile flow images of a sphere indenter on different locations (in order of dilate, shear, and twist, 15 images for each type).
+
+We get tactile flow through optical flow algorithm (Farneback) between initial image and deformed image.
+
+We label center, circumference, and contact points (depth > 0) of dilate image. 
+
+
+$$
+\begin{align}
+&\min_{\lambda_d} \sum_{d=1}^{|D|} \sum_{m=1}^{|M|} (y^{(d,m)} - f_d^{(d,m)}(\lambda_d))^2 \\
+f_d(\lambda_d) &= \sum_{c=1}^C \Delta h_c \cdot (M - C_c) \cdot \exp(-\lambda_d \|M - C_c\|^2) \\
+&\min_{\lambda_s} \sum_{s=1}^{|S|} \sum_{m=1}^{|M|} (y^{(s,m)} - f_s^{(s,m)}(\lambda_s))^2 \\
+f_s(\lambda_s) &= \Delta s \cdot \exp(-\lambda_s \| M - G \|^2_2) \\
+&\min_{\lambda_t} \sum_{t=1}^{|T|} \sum_{m=1}^{|M|} (y^{(t,m)} - f_t^{(t,m)}(\lambda_t))^2 \\
+f_t(\lambda_t) &= \Delta \theta \cdot \exp(-\lambda_t \| M - G \|^2_2)
+\end{align}
+$$
