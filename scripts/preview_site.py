@@ -258,6 +258,8 @@ def main():
                     if path == "/publications/bimanual-manipulation/":
                         assert (details["width"], details["height"]) == (948, 774), details
                         assert abs(details["duration"] - 7.5) < 0.05, details
+                    if urlsplit(details["src"]).path == "/videos/hulk-power-clean.mp4":
+                        assert abs(details["duration"] - 11) < 0.05, details
                     report["videos"].append(details)
                 page.reload(wait_until="networkidle")
                 name = path.strip("/").replace("/", "-")

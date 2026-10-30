@@ -1,20 +1,72 @@
 {
   "source_sha256": "b52aad26c900a05fde1c4fc2910a04a9a2bada287b1a0ede110ad18392a746a2",
-  "output_sha256": "0e65cc646f51e173a1789a438610ee47e72f3c6500a486f8460b7bdfb6fe18b0",
+  "source_url": null,
+  "source_metadata": {
+    "programs": [],
+    "streams": [
+      {
+        "codec_name": "hevc",
+        "codec_type": "video",
+        "width": 3840,
+        "height": 2160
+      },
+      {
+        "codec_name": "aac",
+        "codec_type": "audio"
+      },
+      {
+        "codec_type": "data"
+      },
+      {
+        "codec_type": "data"
+      },
+      {
+        "codec_type": "data"
+      },
+      {
+        "codec_name": "mjpeg",
+        "codec_type": "video",
+        "width": 1280,
+        "height": 720
+      }
+    ],
+    "format": {
+      "duration": "12.746067",
+      "size": "86841075"
+    }
+  },
+  "output_sha256": "2368c9dfc0a0e336031e8aae10a419cd5bafc9ade8c9cee83e106d587604c269",
   "poster_sha256": "4368546a6906b3a7dfc02836f1cc8aa95122a6c71f9fcc0a5e8df453eda6f57e",
   "ffmpeg": "ffmpeg version 6.1.1-3ubuntu5+esm13 Copyright (c) 2000-2023 the FFmpeg developers",
+  "edit": {
+    "start": 0,
+    "duration": 11.0,
+    "speed": 1.0,
+    "output_duration": 11.0,
+    "crop": null,
+    "mute": false,
+    "poster_time": 4.0
+  },
   "encode_command": [
     "ffmpeg",
     "-hide_banner",
     "-loglevel",
     "error",
     "-y",
+    "-ss",
+    "0",
     "-i",
     "media/sources/hulk-power-clean.MP4",
+    "-t",
+    "11.0",
     "-map",
     "0:v:0",
     "-map",
     "0:a?",
+    "-c:a",
+    "aac",
+    "-b:a",
+    "128k",
     "-vf",
     "scale='min(1280,iw)':-2",
     "-c:v",
@@ -27,10 +79,6 @@
     "yuv420p",
     "-threads",
     "1",
-    "-c:a",
-    "aac",
-    "-b:a",
-    "128k",
     "-map_metadata",
     "-1",
     "-movflags",
@@ -60,16 +108,18 @@
     "streams": [
       {
         "codec_name": "h264",
+        "codec_type": "video",
         "width": 1280,
         "height": 720
       },
       {
-        "codec_name": "aac"
+        "codec_name": "aac",
+        "codec_type": "audio"
       }
     ],
     "format": {
-      "duration": "12.746067",
-      "size": "2183633"
+      "duration": "11.011000",
+      "size": "1832418"
     }
   }
 }

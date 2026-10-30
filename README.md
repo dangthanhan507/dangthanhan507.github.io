@@ -63,8 +63,8 @@ Publication demonstrations are stored locally and autoplay silently in a loop,
 with no playback controls. Source URLs and SHA-256
 checksums for downloaded assets are in `media-sources.json`. The cart and
 Whole-Body Dexterity clips are unmodified copies. HydroShear's complete title
-video and the supplied HULK power-clean clip are compressed for the web with
-their framing, duration, and playback speed preserved.
+video is compressed for the web with its framing, duration, and speed preserved.
+The HULK power-clean preview uses the first 11 seconds at the original speed.
 
 ```sh
 python3 scripts/fetch_media.py
@@ -90,6 +90,7 @@ python3 scripts/prepare_video.py \
   --output videos/hulk-power-clean.mp4 \
   --poster images/hulk-power-clean.jpg \
   --report media/hulk-power-clean.json \
+  --duration 11 \
   --poster-time 4
 ```
 

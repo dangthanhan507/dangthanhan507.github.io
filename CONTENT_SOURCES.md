@@ -14,7 +14,8 @@ Updated 2026-10-30.
 - https://hulk-wbc.com/: HULK title, authors, equal contribution, paper link,
   description, and cart demonstration.
 - `DJI_20261027160719_0475_D (1).MP4`, supplied in Downloads: HULK power-clean
-  demonstration, replacing the earlier collage. The prepared video and poster
+  demonstration, replacing the earlier collage and trimmed to the first 11
+  seconds at the owner's request. The prepared video and poster
   are reproducible with `scripts/prepare_video.py`; source and output hashes
   are recorded in `media/hulk-power-clean.json`.
 - https://wholebodydex.com/: Whole-Body Dexterity title, authors, equal
