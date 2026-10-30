@@ -1,0 +1,75 @@
+{
+  "source_sha256": "b52aad26c900a05fde1c4fc2910a04a9a2bada287b1a0ede110ad18392a746a2",
+  "output_sha256": "0e65cc646f51e173a1789a438610ee47e72f3c6500a486f8460b7bdfb6fe18b0",
+  "poster_sha256": "4368546a6906b3a7dfc02836f1cc8aa95122a6c71f9fcc0a5e8df453eda6f57e",
+  "ffmpeg": "ffmpeg version 6.1.1-3ubuntu5+esm13 Copyright (c) 2000-2023 the FFmpeg developers",
+  "encode_command": [
+    "ffmpeg",
+    "-hide_banner",
+    "-loglevel",
+    "error",
+    "-y",
+    "-i",
+    "media/sources/hulk-power-clean.MP4",
+    "-map",
+    "0:v:0",
+    "-map",
+    "0:a?",
+    "-vf",
+    "scale='min(1280,iw)':-2",
+    "-c:v",
+    "libx264",
+    "-preset",
+    "medium",
+    "-crf",
+    "24",
+    "-pix_fmt",
+    "yuv420p",
+    "-threads",
+    "1",
+    "-c:a",
+    "aac",
+    "-b:a",
+    "128k",
+    "-map_metadata",
+    "-1",
+    "-movflags",
+    "+faststart",
+    "videos/hulk-power-clean.mp4"
+  ],
+  "poster_command": [
+    "ffmpeg",
+    "-hide_banner",
+    "-loglevel",
+    "error",
+    "-y",
+    "-ss",
+    "4.0",
+    "-i",
+    "videos/hulk-power-clean.mp4",
+    "-frames:v",
+    "1",
+    "-q:v",
+    "2",
+    "-threads",
+    "1",
+    "images/hulk-power-clean.jpg"
+  ],
+  "metadata": {
+    "programs": [],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "width": 1280,
+        "height": 720
+      },
+      {
+        "codec_name": "aac"
+      }
+    ],
+    "format": {
+      "duration": "12.746067",
+      "size": "2183633"
+    }
+  }
+}

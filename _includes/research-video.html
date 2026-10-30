@@ -1,0 +1,7 @@
+<figure class="research-video">
+  <video autoplay muted loop playsinline disablepictureinpicture disableremoteplayback preload="metadata" poster="{{ include.poster | relative_url }}" width="{{ include.width | default: 1920 }}" height="{{ include.height | default: 1080 }}" aria-label="{{ include.label }}">
+    <source src="{{ include.src | relative_url }}" type="video/mp4">
+    <a href="{{ include.src | relative_url }}">Download the demonstration video</a>
+  </video>
+  <figcaption>{{ include.caption }} <a href="{{ include.source }}">{{ include.source_label | default: "Project website" }}</a>.</figcaption>
+</figure>

@@ -1,0 +1,72 @@
+{
+  "source_sha256": "990d88bab44c0c0daec4e78f28f12e179f8411f60a7223be2fa40e06407c9ffe",
+  "output_sha256": "51079753677c37443e144591c7a2cad8427a22ff54812319b64e906e96b68f5e",
+  "poster_sha256": "d07cdba1b8ee53b0c3d83e672791241c9d2b415578610b2fb068ab4597604ad5",
+  "ffmpeg": "ffmpeg version 6.1.1-3ubuntu5+esm13 Copyright (c) 2000-2023 the FFmpeg developers",
+  "encode_command": [
+    "ffmpeg",
+    "-hide_banner",
+    "-loglevel",
+    "error",
+    "-y",
+    "-i",
+    "media/sources/hydroshear-title.mp4",
+    "-map",
+    "0:v:0",
+    "-map",
+    "0:a?",
+    "-vf",
+    "scale='min(1280,iw)':-2",
+    "-c:v",
+    "libx264",
+    "-preset",
+    "medium",
+    "-crf",
+    "24",
+    "-pix_fmt",
+    "yuv420p",
+    "-threads",
+    "1",
+    "-c:a",
+    "aac",
+    "-b:a",
+    "128k",
+    "-map_metadata",
+    "-1",
+    "-movflags",
+    "+faststart",
+    "videos/hydroshear.mp4"
+  ],
+  "poster_command": [
+    "ffmpeg",
+    "-hide_banner",
+    "-loglevel",
+    "error",
+    "-y",
+    "-ss",
+    "1.0",
+    "-i",
+    "videos/hydroshear.mp4",
+    "-frames:v",
+    "1",
+    "-q:v",
+    "2",
+    "-threads",
+    "1",
+    "images/hydroshear.jpg"
+  ],
+  "metadata": {
+    "programs": [],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "width": 1280,
+        "height": 720
+      }
+    ],
+    "format": {
+      "duration": "35.000000",
+      "size": "5645838"
+    }
+  }
+}

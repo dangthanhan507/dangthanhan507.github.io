@@ -1,0 +1,102 @@
+{
+  "source_sha256": "9a73755403391a783f8c60fa503981681ebccb00734daf91fa618c450950d3dd",
+  "source_url": "https://www.youtube.com/watch?v=sUok_EjFdDU",
+  "source_metadata": {
+    "programs": [],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "codec_type": "video",
+        "width": 1920,
+        "height": 1080
+      }
+    ],
+    "format": {
+      "duration": "170.533333",
+      "size": "45891167"
+    }
+  },
+  "output_sha256": "18cf49866035bdae170268be7939d1f89db7b24000bcaae69fb300be4b31f910",
+  "poster_sha256": "d863ffadd4c9c6453ef793fe14b53ad6c491f0d60b03c8aabb1d7ea987f78a33",
+  "ffmpeg": "ffmpeg version 6.1.1-3ubuntu5+esm13 Copyright (c) 2000-2023 the FFmpeg developers",
+  "edit": {
+    "start": 151.0,
+    "duration": 15.0,
+    "speed": 2.0,
+    "output_duration": 7.5,
+    "crop": [
+      948,
+      774,
+      966,
+      252
+    ],
+    "mute": true,
+    "poster_time": 1.5
+  },
+  "encode_command": [
+    "ffmpeg",
+    "-hide_banner",
+    "-loglevel",
+    "error",
+    "-y",
+    "-ss",
+    "151.0",
+    "-i",
+    "media/sources/bimanual-dual-limit-surfaces.mp4",
+    "-t",
+    "7.5",
+    "-map",
+    "0:v:0",
+    "-an",
+    "-vf",
+    "trim=duration=15.0,setpts=(PTS-STARTPTS)/2.0,crop=948:774:966:252,scale='min(1280,iw)':-2",
+    "-c:v",
+    "libx264",
+    "-preset",
+    "medium",
+    "-crf",
+    "24",
+    "-pix_fmt",
+    "yuv420p",
+    "-threads",
+    "1",
+    "-map_metadata",
+    "-1",
+    "-movflags",
+    "+faststart",
+    "videos/bimanual-dual-limit-surfaces.mp4"
+  ],
+  "poster_command": [
+    "ffmpeg",
+    "-hide_banner",
+    "-loglevel",
+    "error",
+    "-y",
+    "-ss",
+    "1.5",
+    "-i",
+    "videos/bimanual-dual-limit-surfaces.mp4",
+    "-frames:v",
+    "1",
+    "-q:v",
+    "2",
+    "-threads",
+    "1",
+    "images/bimanual-dual-limit-surfaces.jpg"
+  ],
+  "metadata": {
+    "programs": [],
+    "streams": [
+      {
+        "codec_name": "h264",
+        "codec_type": "video",
+        "width": 948,
+        "height": 774
+      }
+    ],
+    "format": {
+      "duration": "7.500000",
+      "size": "488060"
+    }
+  }
+}

@@ -1,0 +1,30 @@
+{
+  "retrieved_on": "2026-10-30",
+  "assets": [
+    {
+      "path": "media/sources/hydroshear-title.mp4",
+      "url": "https://hydroshear.github.io/static/videos/teaser.mp4",
+      "sha256": "990d88bab44c0c0daec4e78f28f12e179f8411f60a7223be2fa40e06407c9ffe"
+    },
+    {
+      "path": "videos/hulk-cart.mp4",
+      "url": "https://hulk-wbc.com/static/videos/hardware-highlight/cart-300kg.mp4",
+      "sha256": "0e1b7ce0da60ce94797c747d61597490db85058d0e84390a0afc61eab4bd3323"
+    },
+    {
+      "path": "images/hulk-cart.jpg",
+      "url": "https://hulk-wbc.com/static/images/cart-300kg-video-poster.jpg",
+      "sha256": "e4834ae6075b20cbd9b65742c6ed07a7a72724105aa3961ffeb706fbea41593b"
+    },
+    {
+      "path": "videos/whole-body-dexterity.mp4",
+      "url": "https://wholebodydex.com/static/videos/teaser-smaller-core-1bafc88879.mp4",
+      "sha256": "1bafc88879ae6a9717464bda915ace810d903beaf16106c31fe11b5e2a09f54f"
+    },
+    {
+      "path": "images/whole-body-dexterity.jpg",
+      "url": "https://wholebodydex.com/static/videos/posters/teaser-release-band-30-80.jpg",
+      "sha256": "3fe396a9dbdf6113f983e0868a3ca25e50958831caf59d9c7e4058828b1e9993"
+    }
+  ]
+}

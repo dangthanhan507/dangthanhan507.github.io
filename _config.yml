@@ -1,0 +1,103 @@
+locale: en-US
+site_theme: default
+title: An Dang
+title_separator: "|"
+name: An Dang
+description: "Robotics PhD student at the University of Michigan. Dexterous and contact-rich manipulation."
+url: "https://dangthanhan507.github.io"
+baseurl: ""
+repository: dangthanhan507/dangthanhan507.github.io
+timezone: America/New_York
+
+author:
+  avatar: an-dang-profile.webp
+  name: An Dang
+  bio: "Robotics PhD student<br>Manipulation & Machine Intelligence Lab"
+  location: "Ann Arbor, Michigan"
+  employer: University of Michigan, Ann Arbor
+  email: andang@umich.edu
+  googlescholar: "https://scholar.google.com/citations?user=TbOnxx8AAAAJ&hl=en"
+  github: dangthanhan507
+  linkedin: an-dang-91b7411b8
+
+og_image: an-dang-profile.webp
+og_description: "An Dang — Robotics, University of Michigan"
+breadcrumbs: false
+read_more: disabled
+words_per_minute: 160
+future: false
+atom_feed:
+  hide: true
+comments:
+  provider: false
+analytics:
+  provider: false
+
+collections:
+  publications:
+    output: true
+    permalink: /publications/:path/
+
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: single
+      author_profile: true
+      share: false
+      comments: false
+  - scope:
+      path: ""
+      type: publications
+    values:
+      layout: research
+
+include:
+  - _pages
+exclude:
+  - .bundle
+  - .github
+  - .ruby-version
+  - Gemfile
+  - Gemfile.lock
+  - LICENSE
+  - README.md
+  - THIRD_PARTY.md
+  - CONTENT_SOURCES.md
+  - package.json
+  - package-lock.json
+  - media-sources.json
+  - media
+  - node_modules
+  - scripts
+  - vendor
+  - tmp
+  - images/sources
+  - images/An.webp
+  - images/profile.jpg
+  - assets/js/_main.js
+  - assets/js/plugins
+  - assets/js/theme.js
+
+encoding: utf-8
+markdown: kramdown
+highlighter: rouge
+excerpt_separator: "\n\n"
+kramdown:
+  input: GFM
+  hard_wrap: false
+  auto_ids: true
+sass:
+  sass_dir: _sass
+  style: compressed
+  quiet_deps: true
+  silence_deprecations:
+    - import
+    - global-builtin
+    - color-functions
+plugins:
+  - jekyll-sitemap
+compress_html:
+  clippings: all
+  ignore:
+    envs: development

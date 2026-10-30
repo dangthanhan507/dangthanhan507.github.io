@@ -1,0 +1,12 @@
+---
+layout: archive
+title: "Publications"
+permalink: /publications/
+---
+
+<p>Find my papers on <a href="{{ site.author.googlescholar }}">Google Scholar</a>.</p>
+
+{% assign publications = site.publications | sort: "order" | reverse %}
+{% for item in publications %}
+  {% include research-card.html item=item %}
+{% endfor %}

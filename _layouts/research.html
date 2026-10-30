@@ -1,0 +1,16 @@
+---
+layout: single
+---
+
+{% assign research = page %}
+<p class="research-card__authors">{{ research.authors | markdownify | remove: '<p>' | remove: '</p>' }}</p>
+{% if research.contribution %}<p class="research-card__meta">{{ research.contribution }}</p>{% endif %}
+{% if research.year or research.status %}<p class="research-card__meta">{{ research.year }}{% if research.year and research.status %} · {% endif %}{{ research.status }}</p>{% endif %}
+{% include research-links.html item=research %}
+{% if research.video %}
+{% include research-video.html src=research.video poster=research.poster width=research.video_width height=research.video_height label=research.video_label caption=research.video_caption source=research.source_url source_label=research.source_label %}
+{% elsif research.image %}
+<img class="research-detail-image" src="{{ research.image | relative_url }}" alt="{{ research.image_alt }}" width="{{ research.image_width }}" height="{{ research.image_height }}">
+{% endif %}
+{{ content }}
+<p class="research-back"><a href="{{ '/publications/' | relative_url }}">← All publications</a></p>

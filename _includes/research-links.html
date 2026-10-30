@@ -1,0 +1,5 @@
+<p class="research-links">
+  {% for link in include.item.links %}
+    <a href="{{ link.url }}">{{ link.label }}</a>
+  {% endfor %}
+</p>

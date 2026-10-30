@@ -1,0 +1,23 @@
+{% assign item = include.item %}
+{% assign item_url = include.url | default: item.url %}
+<article class="research-card{% if item.image or item.video %} research-card--with-image{% endif %}">
+  {% if item.video %}
+  <div class="research-card__image">
+    <video autoplay muted loop playsinline disablepictureinpicture disableremoteplayback preload="metadata" poster="{{ item.poster | relative_url }}" width="{{ item.video_width | default: 1920 }}" height="{{ item.video_height | default: 1080 }}" aria-label="{{ item.video_label }}">
+      <source src="{{ item.video | relative_url }}" type="video/mp4">
+      <a href="{{ item.video | relative_url }}">Download the demonstration video</a>
+    </video>
+  </div>
+  {% elsif item.image %}
+  <a class="research-card__image" href="{{ item_url | relative_url }}" tabindex="-1" aria-hidden="true">
+    <img src="{{ item.image | relative_url }}" alt="" loading="lazy" width="{{ item.image_width }}" height="{{ item.image_height }}">
+  </a>
+  {% endif %}
+  <div class="research-card__body">
+    <h2 class="archive__item-title"><a href="{{ item_url | relative_url }}">{{ item.title }}</a></h2>
+    <p class="research-card__authors">{{ item.authors | markdownify | remove: '<p>' | remove: '</p>' }}</p>
+    {% if item.year or item.status %}<p class="research-card__meta">{{ item.year }}{% if item.year and item.status %} · {% endif %}{{ item.status }}</p>{% endif %}
+    <p>{{ item.summary }}</p>
+    {% include research-links.html item=item %}
+  </div>
+</article>

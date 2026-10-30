@@ -1,0 +1,14 @@
+{
+  "name": "an-dang-academic-site",
+  "private": true,
+  "scripts": {
+    "build:js": "uglifyjs assets/js/plugins/jquery.greedy-navigation.js assets/js/_main.js assets/js/theme.js -c -m -o assets/js/main.min.js",
+    "build": "npm run build:js && cp node_modules/jquery/dist/jquery.min.js assets/js/jquery.min.js"
+  },
+  "dependencies": {
+    "jquery": "3.7.1"
+  },
+  "devDependencies": {
+    "uglify-js": "3.19.3"
+  }
+}
