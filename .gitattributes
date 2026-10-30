@@ -1,2 +1,3 @@
 # Preserve vendored font files without applying source-code whitespace checks.
 assets/fonts/* -whitespace
+_sass/vendor/** -whitespace
